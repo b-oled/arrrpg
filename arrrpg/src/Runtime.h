@@ -1,4 +1,4 @@
-// arrrpg - main.cpp
+// arrrpg - Runtime.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,15 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "Runtime.h"
-#include <SDL2/SDL.h>
+#ifndef _RUNTIME_H_
+#define _RUNTIME_H_
 
-int
-main( )
+// Forward Declarations
+struct SDL_Window;
+
+namespace arrrpg {
+
+class Runtime
 {
-    arrrpg::Runtime runtime;
-    runtime.start( );
 
-    return 0;
+public:
+    Runtime();
+    ~Runtime();
+
+    void start();
+
+private:
+    SDL_Window* m_window;
+
+};
+
 }
 
+#endif // _RUNTIME_H_
