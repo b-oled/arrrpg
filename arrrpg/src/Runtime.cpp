@@ -16,7 +16,8 @@
 
 #include "Runtime.h"
 #include "stdinc.h"
-#include <SDL2/SDL.h>
+#include <unistd.h>
+#include <GLFW/glfw3.h>
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -28,20 +29,15 @@ Runtime::Runtime()
     :
     m_window( NULL )
 {
-    SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
-
-    m_window = SDL_CreateWindow(
-                "arrrpg",                          // window title
-                SDL_WINDOWPOS_UNDEFINED,           // initial x position
-                SDL_WINDOWPOS_UNDEFINED,           // initial y position
-                1280,                              // width, in pixels
-                720,                               // height, in pixels
-                SDL_WINDOW_OPENGL                  // flags - see below
-                );
-
-    if (m_window == NULL) {
-        printf("Could not create window: %s\n", SDL_GetError());
-        ARRRPG_ASSERT( false );
+    /* Initialize the library */
+    if (glfwInit())
+    {
+        /* Create a windowed mode window and its OpenGL context */
+        m_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+        if (!m_window)
+        {
+            glfwTerminate();
+        }
     }
 }
 
@@ -49,10 +45,7 @@ Runtime::Runtime()
 
 Runtime::~Runtime()
 {
-    if (m_window)
-        SDL_DestroyWindow(m_window);
-
-    SDL_Quit();
+    glfwTerminate();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -60,31 +53,63 @@ Runtime::~Runtime()
 void
 Runtime::start()
 {
-    SDL_Event event;
-    int end = 0;
+    /* Make the window's context current */
+    glfwMakeContextCurrent(m_window);
 
-    while (!end)
-    {
-        if (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
-            case SDL_QUIT:
-                end = 1;
-                break;
+    // /* Loop until the user closes the window */
+     while (!glfwWindowShouldClose(m_window))
+     {
+       glBegin(GL_POLYGON);
+       glColor3f(   1.0,  1.0, 1.0 );
+       glVertex3f(  0.5, -0.5, 0.5 );
+       glVertex3f(  0.5,  0.5, 0.5 );
+       glVertex3f( -0.5,  0.5, 0.5 );
+       glVertex3f( -0.5, -0.5, 0.5 );
+       glEnd();
 
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym)
-                {
-                case SDLK_ESCAPE:
-                case SDLK_q:
-                    end = 1;
-                    break;
-                }
-                break;
-            }
-        }
-    }
+       // Purple side - RIGHT
+       glBegin(GL_POLYGON);
+       glColor3f(  1.0,  0.0,  1.0 );
+       glVertex3f( 0.5, -0.5, -0.5 );
+       glVertex3f( 0.5,  0.5, -0.5 );
+       glVertex3f( 0.5,  0.5,  0.5 );
+       glVertex3f( 0.5, -0.5,  0.5 );
+       glEnd();
+
+       // Green side - LEFT
+       glBegin(GL_POLYGON);
+       glColor3f(   0.0,  1.0,  0.0 );
+       glVertex3f( -0.5, -0.5,  0.5 );
+       glVertex3f( -0.5,  0.5,  0.5 );
+       glVertex3f( -0.5,  0.5, -0.5 );
+       glVertex3f( -0.5, -0.5, -0.5 );
+       glEnd();
+
+       // Blue side - TOP
+       glBegin(GL_POLYGON);
+       glColor3f(   0.0,  0.0,  1.0 );
+       glVertex3f(  0.5,  0.5,  0.5 );
+       glVertex3f(  0.5,  0.5, -0.5 );
+       glVertex3f( -0.5,  0.5, -0.5 );
+       glVertex3f( -0.5,  0.5,  0.5 );
+       glEnd();
+
+       // Red side - BOTTOM
+       glBegin(GL_POLYGON);
+       glColor3f(   1.0,  0.0,  0.0 );
+       glVertex3f(  0.5, -0.5, -0.5 );
+       glVertex3f(  0.5, -0.5,  0.5 );
+       glVertex3f( -0.5, -0.5,  0.5 );
+       glVertex3f( -0.5, -0.5, -0.5 );
+       glEnd();
+
+       glFlush();
+       glfwSwapBuffers(m_window);
+
+    //     /* Poll for and process events */
+         glfwPollEvents();
+     }    /* Make the window's context current */
+
 }
 
 //---------------------------------------------------------------------------------------------------------------------

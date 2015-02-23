@@ -18,7 +18,7 @@
 #define _RUNTIME_H_
 
 // Forward Declarations
-struct SDL_Window;
+struct GLFWwindow;
 
 namespace arrrpg {
 
@@ -32,7 +32,7 @@ public:
     void start();
 
 private:
-    SDL_Window* m_window;
+    GLFWwindow* m_window;
 
 };
 
