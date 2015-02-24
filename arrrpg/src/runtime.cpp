@@ -15,62 +15,67 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "runtime.h"
+#include "world.h"
+
 #include "stdinc.h"
 #include <unistd.h>
 #include <GLFW/glfw3.h>
 
-//---------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 namespace arrrpg {
 
-//---------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 Runtime::Runtime()
     :
-    m_window( NULL )
+    m_window( NULL ),
+    m_world( NULL )
 {
-    /* Initialize the library */
+    // init GL
     if (glfwInit())
     {
         /* Create a windowed mode window and its OpenGL context */
-        m_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+        m_window = glfwCreateWindow(640, 480, "Arrrpg v0.0", NULL, NULL);
 
         if (!m_window)
         {
             glfwTerminate();
         }
     }
+
+    // init world
+    m_world = new World();
+
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 Runtime::~Runtime()
 {
     glfwTerminate();
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 void
 Runtime::start()
 {
-    /* Make the window's context current */
     glfwMakeContextCurrent(m_window);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-    // /* Loop until the user closes the window */
-     while (!glfwWindowShouldClose(m_window))
-     {
+    while (!glfwWindowShouldClose(m_window))
+    {
+        m_world->draw( );
+        glFlush();
+        glfwSwapBuffers(m_window);
 
-
-       glFlush();
-       glfwSwapBuffers(m_window);
-
-    //     /* Poll for and process events */
-         glfwPollEvents();
-     }    /* Make the window's context current */
+        glfwPollEvents();
+     }
 
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 } // namespace arrrpg

@@ -17,10 +17,11 @@
 #ifndef _RUNTIME_H_
 #define _RUNTIME_H_
 
-// Forward Declarations
 struct GLFWwindow;
 
 namespace arrrpg {
+
+class World;
 
 class Runtime
 {
@@ -33,6 +34,7 @@ public:
 
 private:
     GLFWwindow* m_window;
+    World* m_world;
 
 };
 

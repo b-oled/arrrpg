@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <vector>
+#include <GL/gl.h>
 
 namespace arrrpg {
 
@@ -27,12 +28,16 @@ class Node
     typedef std::unique_ptr<Node> node_ptr;
 
 public:
-    virtual ~Node();
-    virtual void draw() = 0;
+    Node( Node* parent = nullptr );
+    virtual ~Node() {}
+    void draw();
+    virtual void do_draw() = 0;
 
 protected:
     std::vector<node_ptr>    m_children;
     Node*                    m_parent;
+
+    GLfloat* m_mtransform;
 
 };
 

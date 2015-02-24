@@ -1,4 +1,4 @@
-// arrrpg - Runtime.h
+// arrrpg - world.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -26,10 +26,10 @@ class World : public Node
 
 public:
     World();
-    ~World();
+    virtual ~World();
 
 public:
-    void draw();
+    void do_draw();
 
 };
 
