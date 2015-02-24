@@ -1,4 +1,4 @@
-// arrrpg - Runtime.cpp
+// arrrpg - runtime.cpp
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "Runtime.h"
+#include "runtime.h"
 #include "stdinc.h"
 #include <unistd.h>
 #include <GLFW/glfw3.h>
@@ -34,6 +34,7 @@ Runtime::Runtime()
     {
         /* Create a windowed mode window and its OpenGL context */
         m_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+
         if (!m_window)
         {
             glfwTerminate();
@@ -59,49 +60,7 @@ Runtime::start()
     // /* Loop until the user closes the window */
      while (!glfwWindowShouldClose(m_window))
      {
-       glBegin(GL_POLYGON);
-       glColor3f(   1.0,  1.0, 1.0 );
-       glVertex3f(  0.5, -0.5, 0.5 );
-       glVertex3f(  0.5,  0.5, 0.5 );
-       glVertex3f( -0.5,  0.5, 0.5 );
-       glVertex3f( -0.5, -0.5, 0.5 );
-       glEnd();
 
-       // Purple side - RIGHT
-       glBegin(GL_POLYGON);
-       glColor3f(  1.0,  0.0,  1.0 );
-       glVertex3f( 0.5, -0.5, -0.5 );
-       glVertex3f( 0.5,  0.5, -0.5 );
-       glVertex3f( 0.5,  0.5,  0.5 );
-       glVertex3f( 0.5, -0.5,  0.5 );
-       glEnd();
-
-       // Green side - LEFT
-       glBegin(GL_POLYGON);
-       glColor3f(   0.0,  1.0,  0.0 );
-       glVertex3f( -0.5, -0.5,  0.5 );
-       glVertex3f( -0.5,  0.5,  0.5 );
-       glVertex3f( -0.5,  0.5, -0.5 );
-       glVertex3f( -0.5, -0.5, -0.5 );
-       glEnd();
-
-       // Blue side - TOP
-       glBegin(GL_POLYGON);
-       glColor3f(   0.0,  0.0,  1.0 );
-       glVertex3f(  0.5,  0.5,  0.5 );
-       glVertex3f(  0.5,  0.5, -0.5 );
-       glVertex3f( -0.5,  0.5, -0.5 );
-       glVertex3f( -0.5,  0.5,  0.5 );
-       glEnd();
-
-       // Red side - BOTTOM
-       glBegin(GL_POLYGON);
-       glColor3f(   1.0,  0.0,  0.0 );
-       glVertex3f(  0.5, -0.5, -0.5 );
-       glVertex3f(  0.5, -0.5,  0.5 );
-       glVertex3f( -0.5, -0.5,  0.5 );
-       glVertex3f( -0.5, -0.5, -0.5 );
-       glEnd();
 
        glFlush();
        glfwSwapBuffers(m_window);

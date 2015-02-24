@@ -1,4 +1,4 @@
-// arrrpg - main.cpp
+// arrrpg - Runtime.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,14 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "runtime.h"
+#ifndef _WORLD_H_
+#define _WORLD_H_
 
-int
-main()
+#include "node.h"
+
+namespace arrrpg {
+
+class World : public Node
 {
-    arrrpg::Runtime runtime;
-    runtime.start();
 
-    return 0;
+public:
+    World();
+    ~World();
+
+public:
+    void draw();
+
+};
+
 }
 
+#endif // _WORLD_H_
