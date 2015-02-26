@@ -25,7 +25,6 @@
 
 typedef struct {
     GLFWwindow* window;
-
 } arpgState;
 
 static arpgState state;
@@ -33,8 +32,20 @@ static arpgState* st = &state;
 
 int
 main (int argc, char** argv) {
+
+    // no arg handling atm
     (void) argc;
     (void) argv;
+
+    // gl setup
+    if (!glewInit()) {
+        fprintf(stderr, "Failed to initialize GLEW!\n");
+        return 1;
+    }
+    if(!glfwInit()) {
+        fprintf(stderr, "Failed to initialize GLFW!\n");
+        return 1;
+    }
 
     // window setup
     st->window = glfwCreateWindow(640, 480, "Arrrpg v0.0", NULL, NULL);
@@ -48,15 +59,20 @@ main (int argc, char** argv) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     // render loop
-    while (!glfwWindowShouldClose(st->window))
+    while (1)
     {
         glFlush();
-        sleep(1);
+
         glfwSwapBuffers(st->window);
         glfwPollEvents();
-     }
 
+        if (glfwWindowShouldClose(st->window)) {
+            break;
+        }
+    }
+
+    // teardown
     glfwTerminate();
+
     return 0;
 }
-
