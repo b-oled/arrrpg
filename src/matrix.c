@@ -14,18 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __HELPER_H__
-#define __HELPER_H__
+#include "matrix.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <stdio.h>
-#include <stdlib.h>
+void
+ot_matrix(float* matrix, float left, float right, float bottom, float top, float near, float far)
+{
+    matrix[0]  = 2 / (right - left); // x1
+    matrix[1]  = 0;                  // y1
+    matrix[2]  = 0;                  // z1
+    matrix[3]  = 0;                  // w1
 
-char* read_file(const char* path);
-GLuint create_shader(GLenum type, const char* source);
-GLuint load_shader(GLenum type, const char* path);
-GLuint create_program( const char* vs_path, const char* fs_path);
-GLuint make_buffer(GLsizei size, const GLfloat* data);
+    matrix[4]  = 0;
+    matrix[5]  = 2 / (top - bottom);
+    matrix[6]  = 0;
+    matrix[7]  = 0;
 
-#endif // __HELPER_H__
+    matrix[8]  = 0;
+    matrix[9]  = 0;
+    matrix[10] = -2 / (far - near);
+    matrix[11] = 0;
+
+    matrix[12] = -(right + left) / (right - left);
+    matrix[13] = -(top + bottom) / (top - bottom);
+    matrix[14] = -(far + near) / (far - near);
+    matrix[15] = 1;
+}

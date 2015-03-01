@@ -42,7 +42,7 @@ create_shader(GLenum type, const char* source) {
     // check and log result of compilation
     GLint result;
     glGetShaderiv(shader_id, GL_COMPILE_STATUS, &result);
-    if (result != GL_FALSE)
+    if (result == GL_FALSE)
     {
         GLsizei log_length;
         glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &log_length);
@@ -76,7 +76,7 @@ create_program( const char* vs_path, const char* fs_path) {
     // check and log result of linking
     GLint result;
     glGetProgramiv(program_id, GL_LINK_STATUS, &result);
-    if (result != GL_FALSE)
+    if (result == GL_FALSE)
     {
         GLsizei log_length;
         glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &log_length);
@@ -91,4 +91,15 @@ create_program( const char* vs_path, const char* fs_path) {
     glDeleteShader(fs_id);
 
     return program_id;
+}
+
+GLuint
+make_buffer(GLsizei size, const GLfloat* data) {
+    GLuint buffer_id;
+    glGenBuffers(1, &buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
+    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return buffer_id;
 }

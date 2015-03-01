@@ -14,18 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __HELPER_H__
-#define __HELPER_H__
+#ifndef __MATRIX_H__
+#define __MATRIX_H__
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <stdio.h>
-#include <stdlib.h>
+// sets matrix to orthographic transform
+void ot_matrix(float* matrix, float left, float right, float bottom, float top, float near, float far);
 
-char* read_file(const char* path);
-GLuint create_shader(GLenum type, const char* source);
-GLuint load_shader(GLenum type, const char* path);
-GLuint create_program( const char* vs_path, const char* fs_path);
-GLuint make_buffer(GLsizei size, const GLfloat* data);
-
-#endif // __HELPER_H__
+#endif // __MATRIX_H__
