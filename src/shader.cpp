@@ -22,6 +22,17 @@
 
 namespace arrrpg {
 
+Shader::Shader()
+{
+
+}
+
+Shader::~Shader()
+{
+    m_attributeList.clear();
+    m_uniformLocationList.clear();
+}
+
 void
 Shader::LoadFromString(GLenum type, const std::string &source)
 {
@@ -31,7 +42,8 @@ Shader::LoadFromString(GLenum type, const std::string &source)
     glCompileShader(shader);
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-    if (status == GL_FALSE) {
+    if (status == GL_FALSE)
+    {
         GLint length;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
         GLchar *info = (GLchar*)calloc(length, sizeof(GLchar));
@@ -39,7 +51,20 @@ Shader::LoadFromString(GLenum type, const std::string &source)
         fprintf(stderr, "glCompileShader failed:\n%s\n", info);
         free(info);
     }
-    m_shaders[m_totalShaders++] = shader;
+    switch (type)
+    {
+    case GL_VERTEX_SHADER:
+        m_vertex_shader = shader;
+        break;
+    case GL_FRAGMENT_SHADER:
+        m_fragment_shader = shader;
+        break;
+    case GL_GEOMETRY_SHADER:
+        m_geometry_shader = shader;
+        break;
+    default:
+        break;
+    }
 }
 
 void
@@ -52,16 +77,20 @@ Shader::LoadFromFile(GLenum type, const std::string &filename)
     LoadFromString(type, str);
 }
 
-void Shader::CreateAndLinkProgram() {
+void
+Shader::CreateAndLinkProgram() {
     m_program = glCreateProgram ();
-    if (m_shaders[VERTEX_SHADER] != 0) {
-        glAttachShader (m_program, m_shaders[VERTEX_SHADER]);
+    if (m_vertex_shader != 0)
+    {
+        glAttachShader(m_program, m_vertex_shader);
     }
-    if (m_shaders[FRAGMENT_SHADER] != 0) {
-        glAttachShader (m_program, m_shaders[FRAGMENT_SHADER]);
+    if (m_fragment_shader != 0)
+    {
+        glAttachShader(m_program, m_fragment_shader);
     }
-    if (m_shaders[GEOMETRY_SHADER] != 0) {
-        glAttachShader (m_program, m_shaders[GEOMETRY_SHADER]);
+    if (m_geometry_shader != 0)
+    {
+        glAttachShader(m_program, m_geometry_shader);
     }
 
     //link and check whether the program links fine
@@ -69,44 +98,57 @@ void Shader::CreateAndLinkProgram() {
     glLinkProgram (m_program);
     glGetProgramiv (m_program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE) {
-        GLint infoLogLength;
-
-        glGetProgramiv (m_program, GL_INFO_LOG_LENGTH, &infoLogLength);
-        GLchar *infoLog= new GLchar[infoLogLength];
-        glGetProgramInfoLog (m_program, infoLogLength, NULL, infoLog);
-        std::cerr<<"Link log: "<<infoLog<<std::endl;
-        delete [] infoLog;
+        GLint length;
+        glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &length);
+        GLchar *info = (GLchar*)calloc(length, sizeof(GLchar));
+        glGetProgramInfoLog(m_program, length, NULL, info);
+        fprintf(stderr, "glLinkProgram failed:\n%s\n", info);
+        free(info);
     }
-
-    glDeleteShader(m_shaders[VERTEX_SHADER]);
-    glDeleteShader(m_shaders[FRAGMENT_SHADER]);
-    glDeleteShader(m_shaders[GEOMETRY_SHADER]);
+    glDeleteShader(m_vertex_shader);
+    glDeleteShader(m_fragment_shader);
+    glDeleteShader(m_geometry_shader);
 }
 
-void Shader::Use() {
+void
+Shader::Use()
+{
     glUseProgram(m_program);
 }
 
-void Shader::UnUse() {
+void
+Shader::UnUse()
+{
     glUseProgram(0);
 }
 
-void Shader::AddAttribute(const std::string& attribute) {
+void
+Shader::AddAttribute(const std::string& attribute)
+{
     m_attributeList[attribute]= glGetAttribLocation(m_program, attribute.c_str());
 }
 
-//An indexer that returns the location of the attribute
-GLuint Shader::operator [](const std::string& attribute) {
+GLuint
+Shader::operator [](const std::string& attribute)
+{
     return m_attributeList[attribute];
 }
 
-void Shader::AddUniform(const std::string& uniform) {
+void
+Shader::AddUniform(const std::string& uniform)
+{
     m_uniformLocationList[uniform] = glGetUniformLocation(m_program, uniform.c_str());
 }
 
-GLuint Shader::operator()(const std::string& uniform){
+GLuint
+Shader::operator()(const std::string& uniform)
+{
     return m_uniformLocationList[uniform];
 }
 
+void Shader::DeleteShaderProgram()
+{
+    glDeleteProgram(m_program);
+}
 
 } // arrrpg

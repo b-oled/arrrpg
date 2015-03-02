@@ -14,6 +14,7 @@ src/world.h
 src/shader.cpp
 src/shader.h
 src/stdinc.h
+src/renderable.h
 shader/simple_fragment.glsl
 shader/simple_vertex.glsl
 )

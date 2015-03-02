@@ -17,11 +17,11 @@
 #ifndef _RUNTIME_H_
 #define _RUNTIME_H_
 
+#include "world.h"
+
 struct GLFWwindow;
 
 namespace arrrpg {
-
-class World;
 
 class Runtime
 {
@@ -34,7 +34,7 @@ public:
 
 private:
     GLFWwindow* m_window;
-    World* m_world;
+    Renderable< World >* m_world;
 
 };
 

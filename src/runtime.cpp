@@ -73,7 +73,8 @@ Runtime::Runtime()
         std::cout << "\tGLSL:" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
         // init world
-        m_world = ARRRPG_NEW( World );
+        m_world = ARRRPG_NEW( Renderable< World >);
+        m_world->init();
     }
 }
 

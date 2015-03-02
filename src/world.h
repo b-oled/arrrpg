@@ -17,14 +17,27 @@
 #ifndef _WORLD_H_
 #define _WORLD_H_
 
+#include "renderable.h"
+
 namespace arrrpg {
 
-class World
+class World : public Renderable< World >
 {
 
 public:
-    World();
+    World(int width, int depth);
     ~World();
+
+    int total_vertices();
+    int total_indices();
+    GLenum primitive_type();
+    void fill_vertex_buffer(GLfloat* pBuffer);
+    void fill_index_buffer(GLuint* pBuffer);
+    void SetCustomUniforms(){ }
+
+private:
+    int m_width;
+    int m_depth;
 
 };
 

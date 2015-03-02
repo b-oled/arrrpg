@@ -41,10 +41,10 @@ public:
     void DeleteShaderProgram();
 
 private:
-    enum ShaderType{VERTEX_SHADER,FRAGMENT_SHADER,GEOMETRY_SHADER};
     GLuint m_program;
-    int m_totalShaders;
-    GLuint m_shaders[3];
+    GLuint m_vertex_shader;
+    GLuint m_fragment_shader;
+    GLuint m_geometry_shader;
     std::map<std::string,GLuint> m_attributeList;
     std::map<std::string,GLuint> m_uniformLocationList;
 };
