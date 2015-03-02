@@ -1,4 +1,4 @@
-// arrrpg - node.cpp
+// arrrpg - world.cpp
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "node.h"
-
-#include <GL/gl.h>
+#include "world.h"
 
 //--------------------------------------------------------------------------------------------------
 
@@ -24,32 +22,16 @@ namespace arrrpg {
 
 //--------------------------------------------------------------------------------------------------
 
-Node::Node(Node *parent)
-    :
-    m_parent( parent )
+World::World()
 {
-    m_mtransform = new GLfloat[16]{
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0.5, 0, 1, 0.5,
-      0, 0, 0, 1
-    };
+
 }
 
 //--------------------------------------------------------------------------------------------------
 
-void
-Node::draw()
+World::~World()
 {
-    // TODO: push/pop matric deprecated need to apply matrix
-    glPushMatrix();
-    this->do_draw();
 
-    for(auto&& node : m_children)
-    {
-        node->draw();
-    }
-    glPopMatrix();
 }
 
 //--------------------------------------------------------------------------------------------------

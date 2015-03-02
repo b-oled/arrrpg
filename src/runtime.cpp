@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "stdinc.h"
 #include "runtime.h"
 #include "world.h"
+#include "shader.h"
 
-#include "stdinc.h"
+#include <iostream>
 #include <unistd.h>
-#include <GLFW/glfw3.h>
 
 //--------------------------------------------------------------------------------------------------
 
@@ -35,18 +36,45 @@ Runtime::Runtime()
     // init GL
     if (glfwInit())
     {
+        // window params
+        glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
         /* Create a windowed mode window and its OpenGL context */
-        m_window = glfwCreateWindow(640, 480, "Arrrpg v0.0", NULL, NULL);
+        m_window = glfwCreateWindow(1280, 720, "Arrrpg v0.0", NULL, NULL);
 
         if (!m_window)
         {
             glfwTerminate();
         }
+        glfwMakeContextCurrent(m_window);
+
+        // init GLEW
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (GLEW_OK != err)
+        {
+            std::cerr<<"Error: "<< glewGetErrorString(err) << std::endl;
+        }
+        else
+        {
+            if (GLEW_VERSION_3_3)
+            {
+                std::cout<<"Driver supports OpenGL 3.3\nDetails:" << std::endl;
+            }
+        }
+
+        std::cout << "\tUsing glew " << glewGetString(GLEW_VERSION) << std::endl;
+        std::cout << "\tVendor: " << glGetString (GL_VENDOR) << std::endl;
+        std::cout << "\tRenderer: " << glGetString (GL_RENDERER) << std::endl;
+        std::cout << "\tVersion: " << glGetString (GL_VERSION) << std::endl;
+        std::cout << "\tGLSL:" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+        // init world
+        m_world = ARRRPG_NEW( World );
     }
-
-    // init world
-    m_world = new World();
-
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -61,13 +89,13 @@ Runtime::~Runtime()
 void
 Runtime::start()
 {
-    glfwMakeContextCurrent(m_window);
     glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     while (!glfwWindowShouldClose(m_window))
     {
-        m_world->draw( );
+
+        usleep(100000);
         glFlush();
         glfwSwapBuffers(m_window);
 

@@ -1,4 +1,4 @@
-// arrrpg - node.h
+// arrrpg - world.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,33 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _NODE_H_
-#define _NODE_H_
-
-#include <memory>
-#include <vector>
-#include <GL/gl.h>
+#ifndef _WORLD_H_
+#define _WORLD_H_
 
 namespace arrrpg {
 
-class Node
+class World
 {
-    typedef std::unique_ptr<Node> node_ptr;
 
 public:
-    Node( Node* parent = nullptr );
-    virtual ~Node() {}
-    void draw();
-    virtual void do_draw() = 0;
-
-protected:
-    std::vector<node_ptr>    m_children;
-    Node*                    m_parent;
-
-    GLfloat* m_mtransform;
+    World();
+    ~World();
 
 };
 
 }
 
-#endif // _NODE_H_
+#endif // _WORLD_H_
