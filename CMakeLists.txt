@@ -11,8 +11,6 @@ src/runtime.cpp
 src/runtime.h
 src/world.cpp
 src/world.h
-src/node.cpp
-src/node.h
 src/shader.cpp
 src/shader.h
 src/stdinc.h
