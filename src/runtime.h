@@ -17,6 +17,7 @@
 #ifndef _RUNTIME_H_
 #define _RUNTIME_H_
 
+#include "stdinc.h"
 #include "world.h"
 
 struct GLFWwindow;
@@ -29,12 +30,24 @@ class Runtime
 public:
     Runtime();
     ~Runtime();
-
     void start();
+
+    // glfw callbacks
+    void on_viewport_resize(int w, int h);
 
 private:
     GLFWwindow* m_window;
-    Renderable< World >* m_world;
+    World* m_world;
+    glm::mat4 m_P;
+
+    // glfw callback wrapper
+    inline static auto glfw_fb_size_callback(
+            GLFWwindow *window,
+            int w,
+            int h) -> void {
+        Runtime* runtime = static_cast<Runtime*>(glfwGetWindowUserPointer(window));
+        runtime->on_viewport_resize(w, h);
+    }
 
 };
 

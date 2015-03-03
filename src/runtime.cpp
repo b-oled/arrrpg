@@ -21,6 +21,8 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 //--------------------------------------------------------------------------------------------------
 
@@ -31,9 +33,11 @@ namespace arrrpg {
 Runtime::Runtime()
     :
     m_window( NULL ),
-    m_world( NULL )
+    m_world( NULL ),
+    m_P(glm::mat4(1))
 {
     // init GL
+
     if (glfwInit())
     {
         // window params
@@ -44,11 +48,11 @@ Runtime::Runtime()
 
         /* Create a windowed mode window and its OpenGL context */
         m_window = glfwCreateWindow(1280, 720, "Arrrpg v0.0", NULL, NULL);
+        ARRRPG_CHECK_GL_ERROR;
 
-        if (!m_window)
-        {
-            glfwTerminate();
-        }
+        glfwSetWindowUserPointer(m_window, this);
+        glfwSetFramebufferSizeCallback(m_window, glfw_fb_size_callback);
+
         glfwMakeContextCurrent(m_window);
 
         // init GLEW
@@ -73,7 +77,7 @@ Runtime::Runtime()
         std::cout << "\tGLSL:" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
         // init world
-        m_world = ARRRPG_NEW( Renderable< World >);
+        m_world = ARRRPG_NEW( World(40, 40) );
         m_world->init();
     }
 }
@@ -95,14 +99,31 @@ Runtime::start()
 
     while (!glfwWindowShouldClose(m_window))
     {
+        //camera transformation variables
+        float rX=25, rY=-40, dist = -5;
 
-        usleep(100000);
-        glFlush();
+        glm::mat4 T		= glm::translate(glm::mat4(1.0f),glm::vec3(0.0f, 0.0f, dist));
+        glm::mat4 Rx	= glm::rotate(T,  rX, glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 MV	= glm::rotate(Rx, rY, glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 MVP	= m_P*MV;
+
+        float time = (glfwGetTime()/1000.0f * 1);
+        m_world->time(time);
+        m_world->render(glm::value_ptr(MVP));
         glfwSwapBuffers(m_window);
 
         glfwPollEvents();
      }
 
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void
+Runtime::on_viewport_resize(int w, int h)
+{
+    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+    m_P = glm::perspective(45.0f, (GLfloat)w/h, 1.f, 1000.f);
 }
 
 //--------------------------------------------------------------------------------------------------

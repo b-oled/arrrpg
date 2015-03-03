@@ -22,14 +22,14 @@ namespace arrrpg {
 
 //--------------------------------------------------------------------------------------------------
 
-World::World(int width, int depth)
+World::World(int numx, int numz)
 {
-    m_width = width;
-    m_depth = depth;
+    m_numx = numx;
+    m_numz = numz;
 
     //setup shader
-    shader.LoadFromFile(GL_VERTEX_SHADER, "shaders/shader.vert");
-    shader.LoadFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+    shader.LoadFromFile(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
+    shader.LoadFromFile(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
     shader.CreateAndLinkProgram();
     shader.Use();
         shader.AddAttribute("vVertex");
@@ -48,10 +48,18 @@ World::~World()
 
 //--------------------------------------------------------------------------------------------------
 
+void
+World::time(float time)
+{
+    m_time = time;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 int
 World::total_vertices()
 {
-    return ((m_width + 1) + (m_depth + 1)) * 2;
+    return (m_numx + 1) * (m_numz + 1);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -59,7 +67,7 @@ World::total_vertices()
 int
 World::total_indices()
 {
-    return (m_width * m_depth);
+    return m_numx * m_numz * 2 * 3;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -77,34 +85,44 @@ World::fill_vertex_buffer(GLfloat *pBuffer)
 {
     glm::vec3* vertices = (glm::vec3*)(pBuffer);
     int count = 0;
-    int width_2 = m_width/2;
-    int depth_2 = m_depth/2;
-    int i=0 ;
-
-    for( i=-width_2;i<=width_2;i++)
-    {
-        vertices[count++] = glm::vec3( i,0,-depth_2);
-        vertices[count++] = glm::vec3( i,0, depth_2);
-
-        vertices[count++] = glm::vec3( -width_2,0,i);
-        vertices[count++] = glm::vec3(  width_2,0,i);
+    int i=0, j=0;
+    for( j=0;j<=m_numz;j++) {
+        for( i=0;i<=m_numx;i++) {
+            vertices[count++] = glm::vec3( ((float(i)/(m_numx-1)) *2-1)*2, 0, ((float(j)/(m_numz-1))*2-1)*2);
+        }
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 
 void
-World::fill_index_buffer(GLuint* pBuffer)
+World::fill_index_buffer(GLuint *pBuffer)
 {
-    int i=0;
+    int i=0, j=0;
     GLuint* id=pBuffer;
-    for (i = 0; i < m_width * m_depth; i += 4)
-    {
-        *id++ = i;
-        *id++ = i+1;
-        *id++ = i+2;
-        *id++ = i+3;
+    for (i = 0; i < m_numz; i++) {
+        for (j = 0; j < m_numx; j++) {
+            int i0 = i * (m_numx+1) + j;
+            int i1 = i0 + 1;
+            int i2 = i0 + (m_numx+1);
+            int i3 = i2 + 1;
+            if ((j+i)%2) {
+                *id++ = i0; *id++ = i2; *id++ = i1;
+                *id++ = i1; *id++ = i2; *id++ = i3;
+            } else {
+                *id++ = i0; *id++ = i2; *id++ = i3;
+                *id++ = i0; *id++ = i3; *id++ = i1;
+            }
+        }
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void
+World::SetCustomUniforms()
+{
+    glUniform1f(shader("time"), m_time);
 }
 
 //--------------------------------------------------------------------------------------------------

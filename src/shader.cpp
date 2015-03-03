@@ -70,11 +70,19 @@ Shader::LoadFromString(GLenum type, const std::string &source)
 void
 Shader::LoadFromFile(GLenum type, const std::string &filename)
 {
-    std::ifstream f(filename);
-    std::string str;
-    str.assign(std::istreambuf_iterator<char>(f),
-                    std::istreambuf_iterator<char>());
-    LoadFromString(type, str);
+    std::ifstream fp;
+    fp.open(filename.c_str(), std::ios_base::in);
+    if(fp) {
+        std::string line, buffer;
+        while(getline(fp, line)) {
+            buffer.append(line);
+            buffer.append("\r\n");
+        }
+        //copy to source
+        LoadFromString(type, buffer);
+    } else {
+        std::cerr<<"Error loading shader: "<<filename<<std::endl;
+    }
 }
 
 void

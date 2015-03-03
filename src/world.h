@@ -25,19 +25,23 @@ class World : public Renderable< World >
 {
 
 public:
-    World(int width, int depth);
+    World(int numx, int numz);
     ~World();
 
+    void time(float time);
+
+    // from Renderable
     int total_vertices();
     int total_indices();
     GLenum primitive_type();
     void fill_vertex_buffer(GLfloat* pBuffer);
     void fill_index_buffer(GLuint* pBuffer);
-    void SetCustomUniforms(){ }
+    void SetCustomUniforms();
 
 private:
-    int m_width;
-    int m_depth;
+    int m_numz;
+    int m_numx;
+    int m_time;
 
 };
 
