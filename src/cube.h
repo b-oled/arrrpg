@@ -1,4 +1,4 @@
-// arrrpg - runtime.h
+// arrrpg - cube.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,46 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _RUNTIME_H_
-#define _RUNTIME_H_
+#ifndef _CUBE_H_
+#define _CUBE_H_
 
-#include "stdinc.h"
-
-struct GLFWwindow;
+#include "renderable.h"
 
 namespace arrrpg {
 
-class World;
-class Cube;
-
-class Runtime
+class Cube : public Renderable< Cube >
 {
 
 public:
-    Runtime();
-    ~Runtime();
-    void start();
+    Cube();
+    ~Cube();
 
-    // glfw callbacks
-    void on_viewport_resize(int w, int h);
-
-private:
-    GLFWwindow* m_window;
-    World* m_world;
-    Cube* m_cube;
-    glm::mat4 m_P;
-
-    // glfw callback wrapper
-    inline static auto glfw_fb_size_callback(
-            GLFWwindow *window,
-            int w,
-            int h) -> void {
-        Runtime* runtime = static_cast<Runtime*>(glfwGetWindowUserPointer(window));
-        runtime->on_viewport_resize(w, h);
-    }
+    // from Renderable
+    int total_vertices();
+    int total_indices();
+    GLenum primitive_type();
+    void fill_vertex_buffer(GLfloat* pBuffer);
+    void fill_index_buffer(GLshort* pBuffer);
+    void SetCustomUniforms();
 
 };
 
 }
 
-#endif // _RUNTIME_H_
+#endif // _CUBE_H_

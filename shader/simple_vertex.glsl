@@ -7,7 +7,13 @@ const float frequency = 4;
 const float PI = 3.14159;
 void main()
 {
-    float distance = length(vVertex);
-    float y = amplitude*sin(-PI*distance*frequency+time);
+    float y = vVertex.y;
+    if(time > 0)
+    {
+        float distance = length(vVertex);
+        y = amplitude*sin(-PI*distance*frequency+time);
+    }
+
     gl_Position = MVP*vec4(vVertex.x, y, vVertex.z,1);
+
 }

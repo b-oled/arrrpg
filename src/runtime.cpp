@@ -17,6 +17,7 @@
 #include "stdinc.h"
 #include "runtime.h"
 #include "world.h"
+#include "cube.h"
 #include "shader.h"
 
 #include <iostream>
@@ -90,6 +91,10 @@ Runtime::Runtime()
 
 Runtime::~Runtime()
 {
+    if (m_world)
+        delete m_world;
+    if (m_cube)
+        delete m_cube;
     glfwTerminate();
 }
 
@@ -105,21 +110,24 @@ Runtime::start()
     m_world = ARRRPG_NEW( World(50, 50) );
     m_world->init();
 
+    m_cube = ARRRPG_NEW( Cube() );
+    m_cube->init();
     while (!glfwWindowShouldClose(m_window))
     {
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
         //camera transformation variables
-        float rX=25, rY=-40, dist = -4;
+        float rX=25, rY=-40, dist = -5;
 
         glm::mat4 T	  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, dist));
         glm::mat4 Rx  = glm::rotate(T,  rX, glm::vec3(1.0f, 0.0f, 0.0f));
         glm::mat4 MV  = glm::rotate(Rx, rY, glm::vec3(1.0f, 0.0f, 0.0f));
-        glm::mat4 MVP = m_P*MV;
+        glm::mat4 MVP = m_P * MV;
 
-        float time = (glfwGetTime()*25.0f);
+        float time = (glfwGetTime()*25+0.5f);
         m_world->time(time);
         m_world->render(glm::value_ptr(MVP));
+        m_cube->render(glm::value_ptr(MVP));
         glfwSwapBuffers(m_window);
 
         glfwPollEvents();

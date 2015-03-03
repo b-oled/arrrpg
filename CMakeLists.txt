@@ -4,6 +4,8 @@ project(arrrpg)
 
 add_definitions(-std=c++11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -pedantic -Wextra -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -pedantic -Wextra -O3")
 
 SET(sources
 src/main.cpp
@@ -11,6 +13,8 @@ src/runtime.cpp
 src/runtime.h
 src/world.cpp
 src/world.h
+src/cube.cpp
+src/cube.h
 src/shader.cpp
 src/shader.h
 src/stdinc.h

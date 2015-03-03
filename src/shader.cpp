@@ -20,18 +20,26 @@
 #include <fstream>
 #include <iostream>
 
+//--------------------------------------------------------------------------------------------------
+
 namespace arrrpg {
+
+//--------------------------------------------------------------------------------------------------
 
 Shader::Shader()
 {
 
 }
 
+//--------------------------------------------------------------------------------------------------
+
 Shader::~Shader()
 {
     m_attributeList.clear();
     m_uniformLocationList.clear();
 }
+
+//--------------------------------------------------------------------------------------------------
 
 void
 Shader::LoadFromString(GLenum type, const std::string &source)
@@ -67,6 +75,8 @@ Shader::LoadFromString(GLenum type, const std::string &source)
     }
 }
 
+//--------------------------------------------------------------------------------------------------
+
 void
 Shader::LoadFromFile(GLenum type, const std::string &filename)
 {
@@ -84,6 +94,8 @@ Shader::LoadFromFile(GLenum type, const std::string &filename)
         std::cerr<<"Error loading shader: "<<filename<<std::endl;
     }
 }
+
+//--------------------------------------------------------------------------------------------------
 
 void
 Shader::CreateAndLinkProgram() {
@@ -118,11 +130,15 @@ Shader::CreateAndLinkProgram() {
     glDeleteShader(m_geometry_shader);
 }
 
+//--------------------------------------------------------------------------------------------------
+
 void
 Shader::Use()
 {
     glUseProgram(m_program);
 }
+
+//--------------------------------------------------------------------------------------------------
 
 void
 Shader::UnUse()
@@ -130,11 +146,15 @@ Shader::UnUse()
     glUseProgram(0);
 }
 
+//--------------------------------------------------------------------------------------------------
+
 void
 Shader::AddAttribute(const std::string& attribute)
 {
     m_attributeList[attribute]= glGetAttribLocation(m_program, attribute.c_str());
 }
+
+//--------------------------------------------------------------------------------------------------
 
 GLuint
 Shader::operator [](const std::string& attribute)
@@ -142,11 +162,15 @@ Shader::operator [](const std::string& attribute)
     return m_attributeList[attribute];
 }
 
+//--------------------------------------------------------------------------------------------------
+
 void
 Shader::AddUniform(const std::string& uniform)
 {
     m_uniformLocationList[uniform] = glGetUniformLocation(m_program, uniform.c_str());
 }
+
+//--------------------------------------------------------------------------------------------------
 
 GLuint
 Shader::operator()(const std::string& uniform)
@@ -154,9 +178,14 @@ Shader::operator()(const std::string& uniform)
     return m_uniformLocationList[uniform];
 }
 
-void Shader::DeleteShaderProgram()
+//--------------------------------------------------------------------------------------------------
+
+void
+Shader::DeleteShaderProgram()
 {
     glDeleteProgram(m_program);
 }
+
+//--------------------------------------------------------------------------------------------------
 
 } // arrrpg
