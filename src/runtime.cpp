@@ -108,6 +108,8 @@ Runtime::start()
         glm::mat4 MVP	= m_P*MV;
 
         float time = (glfwGetTime()/1000.0f * 1);
+        printf("time %f\n", time);
+        usleep(50 * 1000);
         m_world->time(time);
         m_world->render(glm::value_ptr(MVP));
         glfwSwapBuffers(m_window);

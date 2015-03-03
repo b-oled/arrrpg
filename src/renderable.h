@@ -32,7 +32,7 @@ public:
             glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, MVP);
             SetCustomUniforms();
             glBindVertexArray(vaoID);
-                glDrawElements(primType, totalIndices, GL_UNSIGNED_INT, 0);
+                glDrawElements(primType, totalIndices, GL_UNSIGNED_SHORT, 0);
             glBindVertexArray(0);
         shader.UnUse();
     }
@@ -57,7 +57,7 @@ public:
         return impl().fill_vertex_buffer(pBuffer);
     }
 
-    void fill_index_buffer(GLuint* pBuffer)
+    void fill_index_buffer(GLshort* pBuffer)
     {
         return impl().fill_index_buffer(pBuffer);
     }
@@ -94,8 +94,8 @@ public:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIndicesID);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalIndices * sizeof(GLshort), 0, GL_STATIC_DRAW);
 
-        GLuint* pIBuffer = static_cast<GLuint*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
-                                                            GL_WRITE_ONLY));
+        GLshort* pIBuffer = static_cast<GLshort*>(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
+                                                              GL_WRITE_ONLY));
         fill_index_buffer(pIBuffer);
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 

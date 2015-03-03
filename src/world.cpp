@@ -34,6 +34,7 @@ World::World(int numx, int numz)
     shader.Use();
         shader.AddAttribute("vVertex");
         shader.AddUniform("MVP");
+        shader.AddUniform("time");
     shader.UnUse();
 
     init();
@@ -75,7 +76,7 @@ World::total_indices()
 GLenum
 World::primitive_type()
 {
-    return GL_LINES;
+    return GL_TRIANGLES;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -96,10 +97,10 @@ World::fill_vertex_buffer(GLfloat *pBuffer)
 //--------------------------------------------------------------------------------------------------
 
 void
-World::fill_index_buffer(GLuint *pBuffer)
+World::fill_index_buffer(GLshort *pBuffer)
 {
     int i=0, j=0;
-    GLuint* id=pBuffer;
+    GLshort* id=pBuffer;
     for (i = 0; i < m_numz; i++) {
         for (j = 0; j < m_numx; j++) {
             int i0 = i * (m_numx+1) + j;

@@ -35,7 +35,7 @@ public:
     int total_indices();
     GLenum primitive_type();
     void fill_vertex_buffer(GLfloat* pBuffer);
-    void fill_index_buffer(GLuint* pBuffer);
+    void fill_index_buffer(GLshort* pBuffer);
     void SetCustomUniforms();
 
 private:
