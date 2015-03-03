@@ -28,6 +28,9 @@
 
 namespace arrrpg {
 
+#define INITIAL_WIDTH 1280
+#define INITIAL_HEIGHT 720
+
 //--------------------------------------------------------------------------------------------------
 
 Runtime::Runtime()
@@ -47,7 +50,7 @@ Runtime::Runtime()
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         /* Create a windowed mode window and its OpenGL context */
-        m_window = glfwCreateWindow(1280, 720, "Arrrpg v0.0", NULL, NULL);
+        m_window = glfwCreateWindow(INITIAL_WIDTH, INITIAL_HEIGHT, "Arrrpg v0.0", NULL, NULL);
         ARRRPG_CHECK_GL_ERROR;
 
         glfwSetWindowUserPointer(m_window, this);
@@ -76,9 +79,10 @@ Runtime::Runtime()
         std::cout << "\tVersion: " << glGetString (GL_VERSION) << std::endl;
         std::cout << "\tGLSL:" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-        // init world
-        m_world = ARRRPG_NEW( World(40, 40) );
-        m_world->init();
+        //setup cam
+        glViewport (0, 0, (GLsizei) INITIAL_WIDTH, (GLsizei) INITIAL_HEIGHT);
+        m_P = glm::perspective(45.0f, (GLfloat)INITIAL_WIDTH/INITIAL_HEIGHT, 1.f, 1000.f);
+
     }
 }
 
@@ -95,21 +99,25 @@ void
 Runtime::start()
 {
     glEnable(GL_DEPTH_TEST);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    // init world
+    m_world = ARRRPG_NEW( World(50, 50) );
+    m_world->init();
 
     while (!glfwWindowShouldClose(m_window))
     {
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
         //camera transformation variables
-        float rX=25, rY=-40, dist = -5;
+        float rX=25, rY=-40, dist = -4;
 
-        glm::mat4 T		= glm::translate(glm::mat4(1.0f),glm::vec3(0.0f, 0.0f, dist));
-        glm::mat4 Rx	= glm::rotate(T,  rX, glm::vec3(1.0f, 0.0f, 0.0f));
-        glm::mat4 MV	= glm::rotate(Rx, rY, glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 MVP	= m_P*MV;
+        glm::mat4 T	  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, dist));
+        glm::mat4 Rx  = glm::rotate(T,  rX, glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 MV  = glm::rotate(Rx, rY, glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 MVP = m_P*MV;
 
-        float time = (glfwGetTime()/1000.0f * 1);
-        printf("time %f\n", time);
-        usleep(50 * 1000);
+        float time = (glfwGetTime()*25.0f);
         m_world->time(time);
         m_world->render(glm::value_ptr(MVP));
         glfwSwapBuffers(m_window);
