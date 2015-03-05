@@ -32,7 +32,6 @@ Cube::Cube()
     shader.Use();
         shader.AddAttribute("vVertex");
         shader.AddUniform("MVP");
-        shader.AddUniform("time");
     shader.UnUse();
 
     init();

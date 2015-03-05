@@ -107,8 +107,8 @@ Runtime::start()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // init world
-    m_world = ARRRPG_NEW( World(50, 50) );
-    m_world->init();
+//    m_world = ARRRPG_NEW( World(50, 50) );
+//    m_world->init();
 
     m_cube = ARRRPG_NEW( Cube() );
     m_cube->init();
@@ -117,16 +117,16 @@ Runtime::start()
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
         //camera transformation variables
-        float rX=25, rY=-40, dist = -5;
+        float rX=25, rY=-40, dist = -10;
 
         glm::mat4 T	  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, dist));
         glm::mat4 Rx  = glm::rotate(T,  rX, glm::vec3(1.0f, 0.0f, 0.0f));
         glm::mat4 MV  = glm::rotate(Rx, rY, glm::vec3(1.0f, 0.0f, 0.0f));
         glm::mat4 MVP = m_P * MV;
 
-        float time = (glfwGetTime()*25+0.5f);
-        m_world->time(time);
-        m_world->render(glm::value_ptr(MVP));
+//        float time = (glfwGetTime()*25+0.5f);
+//        m_world->time(time);
+//        m_world->render(glm::value_ptr(MVP));
         m_cube->render(glm::value_ptr(MVP));
         glfwSwapBuffers(m_window);
 
@@ -141,7 +141,7 @@ void
 Runtime::on_viewport_resize(int w, int h)
 {
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
-    m_P = glm::perspective(45.0f, (GLfloat)w/h, 1.f, 1000.f);
+    m_P = glm::perspective(0.0f, (GLfloat)w/h, 1.f, 1000.f);
 }
 
 //--------------------------------------------------------------------------------------------------

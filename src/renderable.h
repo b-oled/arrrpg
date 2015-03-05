@@ -32,7 +32,7 @@ public:
             glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, MVP);
             SetCustomUniforms();
             glBindVertexArray(vaoID);
-                glDrawElements(primType, totalIndices, GL_UNSIGNED_SHORT, 0);
+                glDrawElementsInstanced(primType, totalIndices, GL_UNSIGNED_SHORT, 0, 10000);
             glBindVertexArray(0);
         shader.UnUse();
     }
