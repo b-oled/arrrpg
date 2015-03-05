@@ -18,6 +18,7 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory.h>
 #include "helper.h"
 
 char*
@@ -94,12 +95,37 @@ create_program( const char* vs_path, const char* fs_path) {
 }
 
 GLuint
-make_buffer(GLsizei size, const GLfloat* data) {
-    GLuint buffer_id;
-    glGenBuffers(1, &buffer_id);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+make_vao(GLsizei vsize, const GLfloat* vdata,
+            GLsizei isize, const GLushort* idata, GLuint position) {
+    GLuint vertices_id;
+    GLuint indices_id;
+    GLuint vao_id;
 
-    return buffer_id;
+    glGenVertexArrays(1, &vao_id);
+    glGenBuffers(1, &vertices_id);
+    glGenBuffers(1, &indices_id);
+
+    glBindVertexArray(vao_id);
+
+    glBindBuffer (GL_ARRAY_BUFFER, vertices_id);
+    glBufferData (GL_ARRAY_BUFFER, vsize * sizeof(GLfloat), 0, GL_STATIC_DRAW);
+
+    GLfloat* pBuffer = (GLfloat*)(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+    memcpy(pBuffer, vdata, vsize );
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    glEnableVertexAttribArray(position);
+    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE,0,0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertices_id);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_id * sizeof(GLshort), 0, GL_STATIC_DRAW);
+
+    GLshort* pIBuffer = (GLshort*)(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
+                                                          GL_WRITE_ONLY));
+    memcpy(pIBuffer, idata, isize );
+    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+    glBindVertexArray(0);
+
+    return vao_id;
 }

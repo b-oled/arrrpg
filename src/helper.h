@@ -26,6 +26,8 @@ char* read_file(const char* path);
 GLuint create_shader(GLenum type, const char* source);
 GLuint load_shader(GLenum type, const char* path);
 GLuint create_program( const char* vs_path, const char* fs_path);
-GLuint make_buffer(GLsizei size, const GLfloat* data);
+GLuint make_vao(GLsizei vsize, const GLfloat* vdata,
+                GLsizei isize, const GLushort* idata,
+                GLuint position);
 
 #endif // __HELPER_H__

@@ -30,6 +30,9 @@ typedef struct {
     GLuint position;
     GLuint program;
     GLuint matrix;
+    GLuint vao;
+    GLsizei indices_count;
+    GLsizei vertices_count;
 } Attribs;
 
 typedef struct {
@@ -42,27 +45,48 @@ static ArpgState state;
 static ArpgState* st = &state;
 
 // An array of 3 vectors which represents 3 vertices
-static const GLfloat g_vertex_buffer_data[] = {
-   -1.0f, -1.0f, 0.0f,
-   1.0f, -1.0f, 0.0f,
-   0.0f,  1.0f, 0.0f,
-};
+static const GLfloat cube_vertices[] = {
+    // front
+    -0.1, -0.1,  0.1,
+     0.1, -0.1,  0.1,
+     0.1,  0.1,  0.1,
+    -0.1,  0.1,  0.1,
+    // back
+    -0.1, -0.1, -0.1,
+     0.1, -0.1, -0.1,
+     0.1,  0.1, -0.1,
+    -0.1,  0.1, -0.1,
+  };
+
+static const GLushort cube_indices[] = {
+    // front
+    0, 1, 2,
+    2, 3, 0,
+    // top
+    3, 2, 6,
+    6, 7, 3,
+    // back
+    7, 6, 5,
+    5, 4, 7,
+    // bottom
+    4, 5, 1,
+    1, 0, 4,
+    // left
+    4, 0, 3,
+    3, 7, 4,
+    // right
+    1, 5, 6,
+    6, 2, 1,
+  };
 
 void
-draw_triangles(Attribs* attribs, GLuint buffer_id) {
-    glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
-    glEnableVertexAttribArray(attribs->position);
-    glVertexAttribPointer(
-       attribs->position,  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-       3,                  // size
-       GL_FLOAT,           // type
-       GL_FALSE,           // normalized?
-       0,                  // stride
-       (void*)0            // array buffer offset
-    );
-    glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-    glDisableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+render_buffer(Attribs* attribs, GLenum mode) {
+    glUseProgram(attribs->program);
+        glUniformMatrix4fv(attribs->matrix, 1, GL_FALSE, 0);
+        glBindVertexArray(attribs->vao);
+            glDrawElements(mode, attribs->indices_count, GL_UNSIGNED_SHORT, 0);
+        glBindVertexArray(0);
+    glUseProgram(0);
 }
 
 int
@@ -102,9 +126,6 @@ main (int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-    // test
-    GLuint triangle_buffer = make_buffer(sizeof(g_vertex_buffer_data), g_vertex_buffer_data);
-
     Attribs triangle = {0};
 
     GLuint program;
@@ -112,6 +133,9 @@ main (int argc, char** argv) {
     triangle.program = program;
     triangle.position = glGetAttribLocation(program, "position");
     triangle.matrix = glGetUniformLocation(program, "matrix");
+    // test
+    triangle.vao = make_vao(sizeof(cube_vertices)/3, cube_vertices,
+                            sizeof(cube_indices), cube_indices, triangle.position);
 
     // render loop
     while (1)
@@ -119,7 +143,7 @@ main (int argc, char** argv) {
         glfwGetFramebufferSize(st->window, &st->width, &st->height);
         glViewport(0, 0, st->width, st->height);
 
-        draw_triangles(&triangle, triangle_buffer);
+        render_buffer(&triangle, GL_TRIANGLES);
         glfwSwapBuffers(st->window);
         glfwPollEvents();
 
