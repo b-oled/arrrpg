@@ -9,6 +9,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -pedantic -Wextra 
 
 SET(sources
 src/main.cpp
+src/camera.cpp
+src/camera.h
+src/freecamera.cpp
+src/freecamera.h
 src/runtime.cpp
 src/runtime.h
 src/world.cpp

@@ -23,8 +23,14 @@ namespace arrrpg {
 
 //--------------------------------------------------------------------------------------------------
 
-Cube::Cube()
+Cube::Cube(int rows, int cols)
 {
+    m_rows = rows;
+    m_cols = cols;
+    amount = rows * cols;
+    totalIndices = 36;
+    totalVertices = 8;
+
     //setup shader
     shader.LoadFromFile(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
     shader.LoadFromFile(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
@@ -32,6 +38,8 @@ Cube::Cube()
     shader.Use();
         shader.AddAttribute("vVertex");
         shader.AddUniform("MVP");
+        shader.AddUniform("rows");
+        shader.AddUniform("cols");
     shader.UnUse();
 
     init();
@@ -42,22 +50,6 @@ Cube::Cube()
 Cube::~Cube()
 {
     destroy();
-}
-
-//--------------------------------------------------------------------------------------------------
-
-int
-Cube::total_vertices()
-{
-    return 8; // 4 vertices, for each front/back face
-}
-
-//--------------------------------------------------------------------------------------------------
-
-int
-Cube::total_indices()
-{
-    return 36; // 6 indices per side, 6 sides
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -121,6 +113,8 @@ Cube::fill_index_buffer(GLshort *pBuffer)
 void
 Cube::SetCustomUniforms()
 {
+    glUniform1i(shader("rows"), m_rows);
+    glUniform1i(shader("cols"), m_cols);
 }
 
 //--------------------------------------------------------------------------------------------------

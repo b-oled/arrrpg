@@ -36,12 +36,19 @@ public:
 
     // glfw callbacks
     void on_viewport_resize(int w, int h);
+    void on_key_callback(int key, int scancode, int action, int mods);
 
 private:
     GLFWwindow* m_window;
     World* m_world;
     Cube* m_cube;
     glm::mat4 m_P;
+    int m_width;
+    int m_height;
+    float m_camx;
+    float m_camy;
+    float m_camrZ;
+    float m_camdist;
 
     // glfw callback wrapper
     inline static auto glfw_fb_size_callback(
@@ -50,6 +57,13 @@ private:
             int h) -> void {
         Runtime* runtime = static_cast<Runtime*>(glfwGetWindowUserPointer(window));
         runtime->on_viewport_resize(w, h);
+    }
+
+    inline static auto glfw_key_callback(
+                GLFWwindow *window,
+                int key, int scancode, int action, int mods) -> void {
+        Runtime* runtime = static_cast<Runtime*>(glfwGetWindowUserPointer(window));
+        runtime->on_key_callback(key, scancode, action, mods);
     }
 
 };

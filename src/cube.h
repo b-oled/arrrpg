@@ -25,16 +25,18 @@ class Cube : public Renderable< Cube >
 {
 
 public:
-    Cube();
+    Cube(int rows, int cols);
     ~Cube();
 
     // from Renderable
-    int total_vertices();
-    int total_indices();
     GLenum primitive_type();
     void fill_vertex_buffer(GLfloat* pBuffer);
     void fill_index_buffer(GLshort* pBuffer);
     void SetCustomUniforms();
+
+private:
+    int m_rows;
+    int m_cols;
 
 };
 

@@ -29,8 +29,8 @@
 
 namespace arrrpg {
 
-#define INITIAL_WIDTH 1280
-#define INITIAL_HEIGHT 720
+#define INITIAL_WIDTH 1700
+#define INITIAL_HEIGHT 900
 
 //--------------------------------------------------------------------------------------------------
 
@@ -38,7 +38,13 @@ Runtime::Runtime()
     :
     m_window( NULL ),
     m_world( NULL ),
-    m_P(glm::mat4(1))
+    m_P(glm::mat4(1)),
+    m_width(INITIAL_WIDTH),
+    m_height(INITIAL_HEIGHT),
+    m_camx(0.0f),
+    m_camy(0.0f),
+    m_camrZ(0.0f),
+    m_camdist(-10.0f)
 {
     // init GL
 
@@ -56,6 +62,7 @@ Runtime::Runtime()
 
         glfwSetWindowUserPointer(m_window, this);
         glfwSetFramebufferSizeCallback(m_window, glfw_fb_size_callback);
+        glfwSetKeyCallback(m_window, glfw_key_callback);
 
         glfwMakeContextCurrent(m_window);
 
@@ -110,18 +117,17 @@ Runtime::start()
 //    m_world = ARRRPG_NEW( World(50, 50) );
 //    m_world->init();
 
-    m_cube = ARRRPG_NEW( Cube() );
+    m_cube = ARRRPG_NEW( Cube(500, 500) );
     m_cube->init();
     while (!glfwWindowShouldClose(m_window))
     {
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-        //camera transformation variables
-        float rX=25, rY=-40, dist = -10;
+        float rX=25, rY=-40;
 
-        glm::mat4 T	  = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, dist));
+        glm::mat4 T	  = glm::translate(glm::mat4(1.0f), glm::vec3(m_camx, m_camy, m_camdist));
         glm::mat4 Rx  = glm::rotate(T,  rX, glm::vec3(1.0f, 0.0f, 0.0f));
-        glm::mat4 MV  = glm::rotate(Rx, rY, glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 MV  = glm::rotate(Rx, rY, glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 MVP = m_P * MV;
 
 //        float time = (glfwGetTime()*25+0.5f);
@@ -140,8 +146,36 @@ Runtime::start()
 void
 Runtime::on_viewport_resize(int w, int h)
 {
+    m_width = w;
+    m_height = h;
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
-    m_P = glm::perspective(0.0f, (GLfloat)w/h, 1.f, 1000.f);
+    m_P = glm::perspective(45.0f, (GLfloat)w/h, 1.f, 1000.f);
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void
+Runtime::on_key_callback(int key, int scancode, int action, int mods)
+{
+    ARRRPG_UNUSED(scancode);
+    ARRRPG_UNUSED(mods);
+    if ( key == GLFW_KEY_W ) {
+        m_camdist+=0.1;
+    } else if ( key == GLFW_KEY_A ) {
+        m_camx++;
+    } else if ( key == GLFW_KEY_S ) {
+        m_camdist-=0.1;
+    } else if ( key == GLFW_KEY_D ) {
+        m_camx--;
+    } else if ( key == GLFW_KEY_Q ) {
+        m_camrZ-=0.01;
+    } else if ( key == GLFW_KEY_E ) {
+        m_camrZ+=0.01;
+    } else if ( key == GLFW_KEY_X ) {
+        m_camy--;
+    } else if ( key == GLFW_KEY_Z ) {
+        m_camy++;
+}
 }
 
 //--------------------------------------------------------------------------------------------------

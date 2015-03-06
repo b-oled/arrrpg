@@ -32,19 +32,9 @@ public:
             glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, MVP);
             SetCustomUniforms();
             glBindVertexArray(vaoID);
-                glDrawElementsInstanced(primType, totalIndices, GL_UNSIGNED_SHORT, 0, 10000);
+                glDrawElementsInstanced(primType, totalIndices, GL_UNSIGNED_SHORT, 0, amount);
             glBindVertexArray(0);
         shader.UnUse();
-    }
-
-    int total_vertices()
-    {
-        return impl().total_vertices();
-    }
-
-    int total_indices()
-    {
-        return impl().total_indices();
     }
 
     GLenum primitive_type()
@@ -74,8 +64,6 @@ public:
         glGenBuffers(1, &vboIndicesID);
 
         //get total vertices and indices
-        totalVertices = total_vertices();
-        totalIndices  = total_indices();
         primType      = primitive_type();
 
         //now allocate buffers
@@ -128,6 +116,7 @@ protected:
 
     GLenum primType;
     int totalVertices, totalIndices;
+    int amount;
 
 };
 
