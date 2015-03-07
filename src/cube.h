@@ -28,6 +28,9 @@ public:
     Cube(int rows, int cols);
     ~Cube();
 
+    void time(float time);
+    void move(bool move);
+
     // from Renderable
     GLenum primitive_type();
     void fill_vertex_buffer(GLfloat* pBuffer);
@@ -37,7 +40,8 @@ public:
 private:
     int m_rows;
     int m_cols;
-
+    float m_time;
+    bool m_move;
 };
 
 }

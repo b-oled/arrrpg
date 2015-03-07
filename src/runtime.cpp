@@ -18,6 +18,7 @@
 #include "runtime.h"
 #include "world.h"
 #include "cube.h"
+#include "freecamera.h"
 #include "shader.h"
 
 #include <iostream>
@@ -37,14 +38,9 @@ namespace arrrpg {
 Runtime::Runtime()
     :
     m_window( NULL ),
-    m_world( NULL ),
-    m_P(glm::mat4(1)),
     m_width(INITIAL_WIDTH),
     m_height(INITIAL_HEIGHT),
-    m_camx(0.0f),
-    m_camy(0.0f),
-    m_camrZ(0.0f),
-    m_camdist(-10.0f)
+    m_fov(45.0f)
 {
     // init GL
 
@@ -63,6 +59,8 @@ Runtime::Runtime()
         glfwSetWindowUserPointer(m_window, this);
         glfwSetFramebufferSizeCallback(m_window, glfw_fb_size_callback);
         glfwSetKeyCallback(m_window, glfw_key_callback);
+        glfwSetCursorPosCallback(m_window, glfw_mousepos_callback);
+        glfwSetMouseButtonCallback(m_window, glfw_mousebtn_callback);
 
         glfwMakeContextCurrent(m_window);
 
@@ -82,15 +80,12 @@ Runtime::Runtime()
         }
 
         std::cout << "\tUsing glew " << glewGetString(GLEW_VERSION) << std::endl;
-        std::cout << "\tVendor: " << glGetString (GL_VENDOR) << std::endl;
-        std::cout << "\tRenderer: " << glGetString (GL_RENDERER) << std::endl;
-        std::cout << "\tVersion: " << glGetString (GL_VERSION) << std::endl;
+        std::cout << "\tVendor: " << glGetString(GL_VENDOR) << std::endl;
+        std::cout << "\tRenderer: " << glGetString(GL_RENDERER) << std::endl;
+        std::cout << "\tVersion: " << glGetString(GL_VERSION) << std::endl;
         std::cout << "\tGLSL:" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-        //setup cam
         glViewport (0, 0, (GLsizei) INITIAL_WIDTH, (GLsizei) INITIAL_HEIGHT);
-        m_P = glm::perspective(45.0f, (GLfloat)INITIAL_WIDTH/INITIAL_HEIGHT, 1.f, 1000.f);
-
     }
 }
 
@@ -98,10 +93,6 @@ Runtime::Runtime()
 
 Runtime::~Runtime()
 {
-    if (m_world)
-        delete m_world;
-    if (m_cube)
-        delete m_cube;
     glfwTerminate();
 }
 
@@ -111,34 +102,44 @@ void
 Runtime::start()
 {
     glEnable(GL_DEPTH_TEST);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // init world
-//    m_world = ARRRPG_NEW( World(50, 50) );
-//    m_world->init();
+    //setup camera
+    m_camera.reset( ARRRPG_NEW( FreeCamera() ) );
+    m_camera->position(glm::vec3(5));
+    glm::vec3 p = glm::vec3(5);
+    glm::vec3 look = glm::normalize(p);
 
-    m_cube = ARRRPG_NEW( Cube(500, 500) );
+    //rotate the camera for proper orientation
+    float yaw = glm::degrees(float(atan2(look.z, look.x) + M_PI));
+    float pitch = glm::degrees(asin(look.y));
+    m_rX = yaw;
+    m_rY = pitch;
+    m_camera->rotate(m_rX, m_rY, 0);
+    m_camera->setup_projection(m_fov, (GLfloat)INITIAL_WIDTH/INITIAL_HEIGHT);
+
+    m_cube.reset( ARRRPG_NEW( Cube(800, 800) ) );
     m_cube->init();
     while (!glfwWindowShouldClose(m_window))
     {
+        m_last_time = m_current_time;
+        m_current_time = glfwGetTime();
+        m_dt = m_current_time-m_last_time;
+
+        m_camera->update();
+
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-        float rX=25, rY=-40;
+        //set the camera transformation
+        glm::mat4 MV	= m_camera->view_matrix();
+        glm::mat4 P     = m_camera->projection_matrix();
+        glm::mat4 MVP	= P*MV;
 
-        glm::mat4 T	  = glm::translate(glm::mat4(1.0f), glm::vec3(m_camx, m_camy, m_camdist));
-        glm::mat4 Rx  = glm::rotate(T,  rX, glm::vec3(1.0f, 0.0f, 0.0f));
-        glm::mat4 MV  = glm::rotate(Rx, rY, glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 MVP = m_P * MV;
-
-//        float time = (glfwGetTime()*25+0.5f);
-//        m_world->time(time);
-//        m_world->render(glm::value_ptr(MVP));
+        m_cube->time(m_current_time);
         m_cube->render(glm::value_ptr(MVP));
-        glfwSwapBuffers(m_window);
 
+        glfwSwapBuffers(m_window);
         glfwPollEvents();
      }
-
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -148,8 +149,8 @@ Runtime::on_viewport_resize(int w, int h)
 {
     m_width = w;
     m_height = h;
-    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
-    m_P = glm::perspective(45.0f, (GLfloat)w/h, 1.f, 1000.f);
+    glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+    m_camera->setup_projection(m_fov, w/h);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -159,23 +160,68 @@ Runtime::on_key_callback(int key, int scancode, int action, int mods)
 {
     ARRRPG_UNUSED(scancode);
     ARRRPG_UNUSED(mods);
-    if ( key == GLFW_KEY_W ) {
-        m_camdist+=0.1;
-    } else if ( key == GLFW_KEY_A ) {
-        m_camx++;
-    } else if ( key == GLFW_KEY_S ) {
-        m_camdist-=0.1;
-    } else if ( key == GLFW_KEY_D ) {
-        m_camx--;
-    } else if ( key == GLFW_KEY_Q ) {
-        m_camrZ-=0.01;
-    } else if ( key == GLFW_KEY_E ) {
-        m_camrZ+=0.01;
-    } else if ( key == GLFW_KEY_X ) {
-        m_camy--;
-    } else if ( key == GLFW_KEY_Z ) {
-        m_camy++;
+    ARRRPG_UNUSED(action);
+
+    if ( key == GLFW_KEY_W )
+    {
+        m_camera->walk((m_dt+1));
+    }
+    else if ( key == GLFW_KEY_A )
+    {
+        m_camera->strafe(-(m_dt+1));
+    }
+    else if ( key == GLFW_KEY_S )
+    {
+        m_camera->walk(-(m_dt+1));
+    }
+    else if ( key == GLFW_KEY_D )
+    {
+        m_camera->strafe((m_dt+1));
+    }
+    else if ( key == GLFW_KEY_Q )
+    {
+        m_camera->lift((m_dt+1));
+    }
+    else if ( key == GLFW_KEY_Z )
+    {
+        m_camera->lift(-(m_dt+1));
+    }
+
 }
+
+//--------------------------------------------------------------------------------------------------
+
+void
+Runtime::on_cursorpos_callback(double x, double y)
+{
+    if (!m_mouse_look) {
+        //m_fov += (y - m_mouse_oldy) / 100.0f;
+        //m_camera->setup_projection(m_fov, m_camera->get_aspect_ratio());
+    } else {
+        m_rY += (y - m_mouse_oldy) / 100.0f;
+        m_rX += (m_mouse_oldx - x) / 100.0f;
+//        if(useFiltering)
+//            filterMouseMoves(rX, rY);
+//        else {
+//            mouseX = rX;
+//            mouseY = rY;
+//        }
+        m_camera->rotate(m_rX,m_rY, 0);
+    }
+    m_mouse_oldx = x;
+    m_mouse_oldy = y;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void
+Runtime::on_mousebtn_callback(int btn, int action, int mods)
+{
+    ARRRPG_UNUSED( action );
+    ARRRPG_UNUSED( mods );
+
+    if (btn == GLFW_MOUSE_BUTTON_1)
+        m_mouse_look = !m_mouse_look;
 }
 
 //--------------------------------------------------------------------------------------------------

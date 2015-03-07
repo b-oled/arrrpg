@@ -29,14 +29,14 @@ World::World(int numx, int numz)
     m_numz = numz;
 
     //setup shader
-    shader.LoadFromFile(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
-    shader.LoadFromFile(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
-    shader.CreateAndLinkProgram();
-    shader.Use();
-        shader.AddAttribute("vVertex");
-        shader.AddUniform("MVP");
-        shader.AddUniform("time");
-    shader.UnUse();
+    shader.load_from_file(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
+    shader.load_from_file(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
+    shader.create_link_program();
+    shader.use();
+        shader.add_attribute("vVertex");
+        shader.add_uniform("MVP");
+        shader.add_uniform("time");
+    shader.un_use();
 
     init();
 }

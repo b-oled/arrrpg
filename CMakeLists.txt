@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 2.8.5)
 project(arrrpg)
 
 add_definitions(-std=c++11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -pedantic -Wextra -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -pedantic -Wextra -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Werror")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-SET(sources
+add_executable(${PROJECT_NAME}
 src/main.cpp
 src/camera.cpp
 src/camera.h
@@ -27,10 +27,8 @@ shader/simple_fragment.glsl
 shader/simple_vertex.glsl
 )
 
-add_executable(${PROJECT_NAME} ${sources})
-
 target_link_libraries(arrrpg glfw GLEW GL)
 
 add_custom_command(TARGET arrrpg PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/shader $<TARGET_FILE_DIR:arrrpg>/shader)
+                   ${CMAKE_SOURCE_DIR}/shader $<TARGET_FILE_DIR:arrrpg>/shader)

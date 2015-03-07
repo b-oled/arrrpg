@@ -28,13 +28,13 @@ public:
 
     void render(const float* MVP)
     {
-        shader.Use();
+        shader.use();
             glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, MVP);
             SetCustomUniforms();
             glBindVertexArray(vaoID);
                 glDrawElementsInstanced(primType, totalIndices, GL_UNSIGNED_SHORT, 0, amount);
             glBindVertexArray(0);
-        shader.UnUse();
+        shader.un_use();
     }
 
     GLenum primitive_type()
@@ -93,7 +93,7 @@ public:
     void destroy()
     {
         //Destroy shader
-        shader.DeleteShaderProgram();
+        shader.delete_program();
 
         //Destroy vao and vbo
         glDeleteBuffers(1, &vboVerticesID);

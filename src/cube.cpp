@@ -24,23 +24,27 @@ namespace arrrpg {
 //--------------------------------------------------------------------------------------------------
 
 Cube::Cube(int rows, int cols)
+    :
+    m_rows(rows),
+    m_cols(cols),
+    m_move(true)
 {
-    m_rows = rows;
-    m_cols = cols;
     amount = rows * cols;
     totalIndices = 36;
     totalVertices = 8;
 
     //setup shader
-    shader.LoadFromFile(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
-    shader.LoadFromFile(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
-    shader.CreateAndLinkProgram();
-    shader.Use();
-        shader.AddAttribute("vVertex");
-        shader.AddUniform("MVP");
-        shader.AddUniform("rows");
-        shader.AddUniform("cols");
-    shader.UnUse();
+    shader.load_from_file(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
+    shader.load_from_file(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
+    shader.create_link_program();
+    shader.use();
+        shader.add_attribute("vVertex");
+        shader.add_uniform("MVP");
+        shader.add_uniform("rows");
+        shader.add_uniform("cols");
+        shader.add_uniform("time");
+        shader.add_uniform("move");
+    shader.un_use();
 
     init();
 }
@@ -50,6 +54,22 @@ Cube::Cube(int rows, int cols)
 Cube::~Cube()
 {
     destroy();
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void
+Cube::time(float time)
+{
+    m_time = time;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+void
+Cube::move(bool move)
+{
+    m_move = move;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -115,6 +135,8 @@ Cube::SetCustomUniforms()
 {
     glUniform1i(shader("rows"), m_rows);
     glUniform1i(shader("cols"), m_cols);
+    glUniform1f(shader("time"), m_time);
+    glUniform1i(shader("move"), m_move);
 }
 
 //--------------------------------------------------------------------------------------------------

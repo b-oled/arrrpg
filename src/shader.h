@@ -29,24 +29,25 @@ public:
     Shader(void);
     ~Shader(void);
 
-    void LoadFromString(GLenum type, const std::string& source);
-    void LoadFromFile(GLenum type, const std::string& filename);
-    void CreateAndLinkProgram();
-    void Use();
-    void UnUse();
-    void AddAttribute(const std::string& attribute);
-    void AddUniform(const std::string& uniform);
+    void load_from_string(GLenum type, const std::string& source);
+    void load_from_file(GLenum type, const std::string& filename);
+    void create_link_program();
+    void delete_program();
+    void use();
+    void un_use();
+    void add_attribute(const std::string& attribute);
+    void add_uniform(const std::string& uniform);
+
     GLuint operator[](const std::string& attribute);
     GLuint operator()(const std::string& uniform);
-    void DeleteShaderProgram();
 
 private:
     GLuint m_program;
     GLuint m_vertex_shader;
     GLuint m_fragment_shader;
     GLuint m_geometry_shader;
-    std::map<std::string,GLuint> m_attributeList;
-    std::map<std::string,GLuint> m_uniformLocationList;
+    std::map<std::string, GLuint> m_attributeList;
+    std::map<std::string, GLuint> m_uniformLocationList;
 };
 
 } // arrrpg

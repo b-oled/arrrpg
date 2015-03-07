@@ -42,7 +42,7 @@ Shader::~Shader()
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::LoadFromString(GLenum type, const std::string &source)
+Shader::load_from_string(GLenum type, const std::string &source)
 {
     GLuint shader = glCreateShader(type);
     const char* foo = source.c_str();
@@ -78,7 +78,7 @@ Shader::LoadFromString(GLenum type, const std::string &source)
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::LoadFromFile(GLenum type, const std::string &filename)
+Shader::load_from_file(GLenum type, const std::string &filename)
 {
     std::ifstream fp;
     fp.open(filename.c_str(), std::ios_base::in);
@@ -89,16 +89,16 @@ Shader::LoadFromFile(GLenum type, const std::string &filename)
             buffer.append("\r\n");
         }
         //copy to source
-        LoadFromString(type, buffer);
+        load_from_string(type, buffer);
     } else {
-        std::cerr<<"Error loading shader: "<<filename<<std::endl;
+        std::cerr << "Error loading shader: " << filename << std::endl;
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::CreateAndLinkProgram() {
+Shader::create_link_program() {
     m_program = glCreateProgram ();
     if (m_vertex_shader != 0)
     {
@@ -117,7 +117,8 @@ Shader::CreateAndLinkProgram() {
     GLint status;
     glLinkProgram (m_program);
     glGetProgramiv (m_program, GL_LINK_STATUS, &status);
-    if (status == GL_FALSE) {
+    if (status == GL_FALSE)
+    {
         GLint length;
         glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &length);
         GLchar *info = (GLchar*)calloc(length, sizeof(GLchar));
@@ -133,7 +134,7 @@ Shader::CreateAndLinkProgram() {
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::Use()
+Shader::use()
 {
     glUseProgram(m_program);
 }
@@ -141,7 +142,7 @@ Shader::Use()
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::UnUse()
+Shader::un_use()
 {
     glUseProgram(0);
 }
@@ -149,9 +150,9 @@ Shader::UnUse()
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::AddAttribute(const std::string& attribute)
+Shader::add_attribute(const std::string& attribute)
 {
-    m_attributeList[attribute]= glGetAttribLocation(m_program, attribute.c_str());
+    m_attributeList[attribute] = glGetAttribLocation(m_program, attribute.c_str());
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -165,7 +166,7 @@ Shader::operator [](const std::string& attribute)
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::AddUniform(const std::string& uniform)
+Shader::add_uniform(const std::string& uniform)
 {
     m_uniformLocationList[uniform] = glGetUniformLocation(m_program, uniform.c_str());
 }
@@ -181,7 +182,7 @@ Shader::operator()(const std::string& uniform)
 //--------------------------------------------------------------------------------------------------
 
 void
-Shader::DeleteShaderProgram()
+Shader::delete_program()
 {
     glDeleteProgram(m_program);
 }

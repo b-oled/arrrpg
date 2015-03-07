@@ -18,6 +18,7 @@
 #define _RUNTIME_H_
 
 #include "stdinc.h"
+#include <memory>
 
 struct GLFWwindow;
 
@@ -25,6 +26,7 @@ namespace arrrpg {
 
 class World;
 class Cube;
+class FreeCamera;
 
 class Runtime
 {
@@ -37,18 +39,24 @@ public:
     // glfw callbacks
     void on_viewport_resize(int w, int h);
     void on_key_callback(int key, int scancode, int action, int mods);
+    void on_cursorpos_callback(double x, double y);
+    void on_mousebtn_callback(int btn, int action, int mods);
 
 private:
     GLFWwindow* m_window;
-    World* m_world;
-    Cube* m_cube;
-    glm::mat4 m_P;
+    std::unique_ptr< Cube > m_cube;
+    std::unique_ptr< FreeCamera > m_camera;
     int m_width;
     int m_height;
-    float m_camx;
-    float m_camy;
-    float m_camrZ;
-    float m_camdist;
+    float m_dt;
+    float m_last_time;
+    float m_current_time;
+    bool m_mouse_look;
+    float m_mouse_oldx;
+    float m_mouse_oldy;
+    float m_fov;
+    float m_rX;
+    float m_rY;
 
     // glfw callback wrapper
     inline static auto glfw_fb_size_callback(
@@ -64,6 +72,20 @@ private:
                 int key, int scancode, int action, int mods) -> void {
         Runtime* runtime = static_cast<Runtime*>(glfwGetWindowUserPointer(window));
         runtime->on_key_callback(key, scancode, action, mods);
+    }
+
+    inline static auto glfw_mousepos_callback(
+                GLFWwindow *window,
+                double x, double y) -> void {
+        Runtime* runtime = static_cast<Runtime*>(glfwGetWindowUserPointer(window));
+        runtime->on_cursorpos_callback(x, y);
+    }
+
+    inline static auto glfw_mousebtn_callback(
+                GLFWwindow *window,
+                int btn, int action, int mods) -> void {
+        Runtime* runtime = static_cast<Runtime*>(glfwGetWindowUserPointer(window));
+        runtime->on_mousebtn_callback(btn, action, mods);
     }
 
 };

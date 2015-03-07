@@ -4,21 +4,22 @@ uniform mat4 MVP;
 uniform float time;
 uniform int rows;
 uniform int cols;
-const float amplitude = 0.125;
-const float frequency = 4;
+uniform bool move = false;
+uniform float amp = 1;
 const float PI = 3.14159;
+int instance = gl_InstanceID;
 void main()
 {
+    float x = vVertex.x;
     float y = vVertex.y;
-    if(time > 0)
-    {
-        float distance = length(vVertex);
-        y = amplitude*sin(-PI*distance*frequency+time);
-    }
+    float z = vVertex.z;
 
-    int tenner = gl_InstanceID / rows;
-    int mod = gl_InstanceID % cols;
+    if (move)
+        z = z + (instance%200)*sin(-PI+time+instance);
 
-    gl_Position = MVP*vec4(vVertex.x + (mod*0.2), y + (tenner*0.2), vVertex.z,1);
+    int mody = instance / rows;
+    int modx = instance % cols;
+
+    gl_Position = MVP*vec4(x + (modx*0.2), y + (mody*0.2), z, 1);
 
 }

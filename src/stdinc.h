@@ -10,7 +10,7 @@ namespace arrrpg {
 
 #define ARRRPG_ASSERT( x ) assert( x )
 #define ARRRPG_UNUSED( x ) (void)( x )
-#define ARRRPG_NEW( x ) new (std::nothrow) x;
+#define ARRRPG_NEW( x ) new (std::nothrow) x
 #define ARRRPG_CHECK_GL_ERROR assert( glGetError() == GL_NO_ERROR )
 
 }
