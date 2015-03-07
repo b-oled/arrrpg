@@ -25,20 +25,28 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <kazmath/mat4.h>
+#include <kazmath/vec3.h>
 
 typedef struct {
     GLuint position;
     GLuint program;
     GLuint matrix;
-    GLuint vao;
+} Attribs;
+
+typedef struct {
+    GLfloat* vertices;
+    GLushort* indices;
     GLsizei indices_count;
     GLsizei vertices_count;
-} Attribs;
+    Attribs attr;
+} Renderable;
 
 typedef struct {
     GLFWwindow* window;
     int height;
     int width;
+    GLuint vao;
 } ArpgState;
 
 static ArpgState state;
@@ -79,12 +87,14 @@ static const GLushort cube_indices[] = {
     6, 2, 1,
   };
 
+kmMat4 test;
+
 void
-render_buffer(Attribs* attribs, GLenum mode) {
-    glUseProgram(attribs->program);
-        glUniformMatrix4fv(attribs->matrix, 1, GL_FALSE, 0);
-        glBindVertexArray(attribs->vao);
-            glDrawElements(mode, attribs->indices_count, GL_UNSIGNED_SHORT, 0);
+render_buffer(Renderable* node, GLenum mode) {
+    glUseProgram(node->attr.program);
+        glUniformMatrix4fv(node->attr.matrix, 1, GL_FALSE, 0);
+        glBindVertexArray(st->vao);
+            glDrawElements(mode, node->indices_count, GL_UNSIGNED_SHORT, 0);
         glBindVertexArray(0);
     glUseProgram(0);
 }
@@ -126,16 +136,25 @@ main (int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-    Attribs triangle = {0};
+    glGenVertexArrays(1, &st->vao);
+
+    Renderable triangle = {0};
 
     GLuint program;
     program = create_program("shader/simple_vertex.glsl", "shader/simple_fragment.glsl");
-    triangle.program = program;
-    triangle.position = glGetAttribLocation(program, "position");
-    triangle.matrix = glGetUniformLocation(program, "matrix");
+    triangle.attr.program = program;
+    triangle.attr.position = glGetAttribLocation(program, "position");
+    triangle.attr.matrix = glGetUniformLocation(program, "matrix");
     // test
-    triangle.vao = make_vao(sizeof(cube_vertices)/3, cube_vertices,
-                            sizeof(cube_indices), cube_indices, triangle.position);
+    make_buffer(sizeof(cube_vertices)/3, cube_vertices,
+                sizeof(cube_indices), cube_indices, &triangle.attr.position, st->vao);
+
+    float rX=25, rY=-40;
+    kmMat4Translation(&test, 0.0f, 0.0f, -10.0f);
+    kmVec3 vec3 = {1.0f, 0.0f, 0.0f};
+    kmMat4RotationAxisAngle(&test, &vec3, rX);
+    kmVec3 vec3_2 = {0.0f, 1.0f, 0.0f};
+    kmMat4RotationAxisAngle(&test, &vec3_2, rY);
 
     // render loop
     while (1)

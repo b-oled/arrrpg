@@ -2,7 +2,9 @@
 layout(location=0) in vec3 position;
 uniform mat4 matrix;
 uniform float time;
-const float amplitude = 0.125;
+uniform int time;
+uniform float time;
+uniform float amplitude = 0.125;
 const float frequency = 4;
 const float PI = 3.14159;
 void main()
@@ -15,5 +17,4 @@ void main()
     }
 
     gl_Position = matrix*vec4(position.x, y, position.z,1);
-
 }

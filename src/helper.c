@@ -95,17 +95,16 @@ create_program( const char* vs_path, const char* fs_path) {
 }
 
 GLuint
-make_vao(GLsizei vsize, const GLfloat* vdata,
-            GLsizei isize, const GLushort* idata, GLuint position) {
+make_buffer(GLsizei vsize, const GLfloat* vdata,
+            GLsizei isize, const GLushort* idata,
+            const GLuint* position, GLuint vao) {
     GLuint vertices_id;
     GLuint indices_id;
-    GLuint vao_id;
 
-    glGenVertexArrays(1, &vao_id);
     glGenBuffers(1, &vertices_id);
     glGenBuffers(1, &indices_id);
 
-    glBindVertexArray(vao_id);
+    glBindVertexArray(vao);
 
     glBindBuffer (GL_ARRAY_BUFFER, vertices_id);
     glBufferData (GL_ARRAY_BUFFER, vsize * sizeof(GLfloat), 0, GL_STATIC_DRAW);
@@ -115,7 +114,7 @@ make_vao(GLsizei vsize, const GLfloat* vdata,
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
     glEnableVertexAttribArray(position);
-    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE,0,0);
+    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertices_id);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_id * sizeof(GLshort), 0, GL_STATIC_DRAW);
@@ -126,6 +125,4 @@ make_vao(GLsizei vsize, const GLfloat* vdata,
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
     glBindVertexArray(0);
-
-    return vao_id;
 }
