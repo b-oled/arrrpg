@@ -1,5 +1,5 @@
-// arrrpg - helper.h
-// Copyright (C) 2015 Ole Diederich <ole@rumgespinne.com>
+// arrrpg - FreeCamera.h
+// Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Affero General Public License as
@@ -14,20 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __HELPER_H__
-#define __HELPER_H__
+#ifndef _FREECAMERA_H_
+#define _FREECAMERA_H_
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "Camera.h"
 
-char* read_file(const char* path);
-GLuint create_shader(GLenum type, const char* source);
-GLuint load_shader(GLenum type, const char* path);
-GLuint create_program( const char* vs_path, const char* fs_path);
-GLuint make_buffer(GLsizei vsize, const GLfloat* vdata,
-                GLsizei isize, const GLushort* idata,
-                const GLuint *position, GLuint vao);
+namespace arrrpg {
 
-#endif // __HELPER_H__
+class FreeCamera : public Camera
+{
+public:
+    FreeCamera(void);
+    ~FreeCamera(void);
+
+    void walk(const float amount);
+    void strafe(const float amount);
+    void lift(const float amount);
+
+public: // from Camera
+    void update();
+    void rotate(const float yaw, const float pitch, const float roll);
+
+protected:
+    float m_yaw;
+    float m_pitch;
+    float m_roll;
+
+    glm::vec3 m_translation;
+};
+
+}
+
+#endif //_FREECAMERA_H_

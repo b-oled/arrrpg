@@ -1,6 +1,7 @@
 #version 330 core
-out vec3 color;
+layout(location=0) out vec4 vFragColor;
 
-void main() {
-    color = vec3(1,0,0);
+void main()
+{
+    vFragColor = vec4(1, 1, 1, 1);
 }

@@ -1,5 +1,5 @@
-// arrrpg - helper.h
-// Copyright (C) 2015 Ole Diederich <ole@rumgespinne.com>
+// arrrpg - main.cpp
+// Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Affero General Public License as
@@ -14,10 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __MATRIX_H__
-#define __MATRIX_H__
+#include "Runtime.h"
 
-// sets matrix to orthographic transform
-void ot_matrix(float* matrix, float left, float right, float bottom, float top, float near, float far);
+int
+main()
+{
+    arrrpg::Runtime runtime;
+    runtime.start();
 
-#endif // __MATRIX_H__
+    return 0;
+}
+
