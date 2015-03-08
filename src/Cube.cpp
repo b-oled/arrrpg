@@ -1,4 +1,4 @@
-// arrrpg - world.cpp
+// arrrpg - Cube.cpp
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "world.h"
-#include "stdinc.h"
+#include "Cube.h"
+#include <memory.h>
 
 //--------------------------------------------------------------------------------------------------
 
@@ -23,27 +23,35 @@ namespace arrrpg {
 
 //--------------------------------------------------------------------------------------------------
 
-World::World(int numx, int numz)
+Cube::Cube(int depth, int width)
+    :
+    m_depth(depth),
+    m_width(width),
+    m_move(false)
 {
-    m_numx = numx;
-    m_numz = numz;
+    m_amount = depth * width;
+    m_total_indices = 36;
+    m_total_vertices = 8;
 
     //setup shader
-    shader.load_from_file(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
-    shader.load_from_file(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
-    shader.create_link_program();
-    shader.use();
-        shader.add_attribute("vVertex");
-        shader.add_uniform("MVP");
-        shader.add_uniform("time");
-    shader.un_use();
+    m_shader.load_from_file(GL_VERTEX_SHADER, "shader/simple_vertex.glsl");
+    m_shader.load_from_file(GL_FRAGMENT_SHADER, "shader/simple_fragment.glsl");
+    m_shader.create_link_program();
+    m_shader.use();
+        m_shader.add_attribute("vVertex");
+        m_shader.add_uniform("MVP");
+        m_shader.add_uniform("depth");
+        m_shader.add_uniform("width");
+        m_shader.add_uniform("time");
+        m_shader.add_uniform("move");
+    m_shader.un_use();
 
     init();
 }
 
 //--------------------------------------------------------------------------------------------------
 
-World::~World()
+Cube::~Cube()
 {
     destroy();
 }
@@ -51,31 +59,23 @@ World::~World()
 //--------------------------------------------------------------------------------------------------
 
 void
-World::time(float time)
+Cube::time(float time)
 {
     m_time = time;
 }
 
 //--------------------------------------------------------------------------------------------------
 
-int
-World::total_vertices()
+void
+Cube::move(bool move)
 {
-    return (m_numx + 1) * (m_numz + 1);
-}
-
-//--------------------------------------------------------------------------------------------------
-
-int
-World::total_indices()
-{
-    return m_numx * m_numz * 2 * 3;
+    m_move = move;
 }
 
 //--------------------------------------------------------------------------------------------------
 
 GLenum
-World::primitive_type()
+Cube::primitive_type()
 {
     return GL_TRIANGLES;
 }
@@ -83,49 +83,60 @@ World::primitive_type()
 //--------------------------------------------------------------------------------------------------
 
 void
-World::fill_vertex_buffer(GLfloat *pBuffer)
+Cube::fill_vertex_buffer(GLfloat *pBuffer)
 {
-    glm::vec3* vertices = (glm::vec3*)(pBuffer);
-    int count = 0;
-    int i=0, j=0;
-    for( j=0;j<=m_numz;j++) {
-        for( i=0;i<=m_numx;i++) {
-            vertices[count++] = glm::vec3( ((float(i) / (m_numx-1)) * 2 - 1) * 2, 0,
-                                           ((float(j) / (m_numz-1)) * 2 - 1) * 2);
-        }
-    }
+    GLfloat cube_vertices[] = {
+        // front
+        -0.1, -0.1,  0.1,
+         0.1, -0.1,  0.1,
+         0.1,  0.1,  0.1,
+        -0.1,  0.1,  0.1,
+        // back
+        -0.1, -0.1, -0.1,
+         0.1, -0.1, -0.1,
+         0.1,  0.1, -0.1,
+        -0.1,  0.1, -0.1,
+      };
+    memcpy(pBuffer, cube_vertices, sizeof(cube_vertices));
 }
 
 //--------------------------------------------------------------------------------------------------
 
 void
-World::fill_index_buffer(GLshort *pBuffer)
+Cube::fill_index_buffer(GLshort *pBuffer)
 {
-    int i=0, j=0;
-    GLshort* id=pBuffer;
-    for (i = 0; i < m_numz; i++) {
-        for (j = 0; j < m_numx; j++) {
-            int i0 = i * (m_numx+1) + j;
-            int i1 = i0 + 1;
-            int i2 = i0 + (m_numx+1);
-            int i3 = i2 + 1;
-            if ((j+i)%2) {
-                *id++ = i0; *id++ = i2; *id++ = i1;
-                *id++ = i1; *id++ = i2; *id++ = i3;
-            } else {
-                *id++ = i0; *id++ = i2; *id++ = i3;
-                *id++ = i0; *id++ = i3; *id++ = i1;
-            }
-        }
-    }
+    GLushort cube_elements[] = {
+        // front
+        0, 1, 2,
+        2, 3, 0,
+        // top
+        3, 2, 6,
+        6, 7, 3,
+        // back
+        7, 6, 5,
+        5, 4, 7,
+        // bottom
+        4, 5, 1,
+        1, 0, 4,
+        // left
+        4, 0, 3,
+        3, 7, 4,
+        // right
+        1, 5, 6,
+        6, 2, 1,
+      };
+    memcpy(pBuffer, cube_elements, sizeof(cube_elements));
 }
 
 //--------------------------------------------------------------------------------------------------
 
 void
-World::SetCustomUniforms()
+Cube::set_custom_uniforms()
 {
-    glUniform1f(shader("time"), m_time);
+    glUniform1i(m_shader("depth"), m_depth);
+    glUniform1i(m_shader("width"), m_width);
+    glUniform1f(m_shader("time"), m_time);
+    glUniform1i(m_shader("move"), m_move);
 }
 
 //--------------------------------------------------------------------------------------------------

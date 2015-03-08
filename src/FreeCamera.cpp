@@ -1,4 +1,4 @@
-// arrrpg - runtime.h
+// arrrpg - FreeCamera.cpp
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "camera.h"
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include "FreeCamera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 //--------------------------------------------------------------------------------------------------
@@ -25,95 +23,72 @@ namespace arrrpg {
 
 //--------------------------------------------------------------------------------------------------
 
-glm::vec3 Camera::UP = glm::vec3(0,1,0);
-
-//--------------------------------------------------------------------------------------------------
-
-Camera::Camera()
+FreeCamera::FreeCamera()
 {
-
+    m_translation = glm::vec3(0);
 }
 
 //--------------------------------------------------------------------------------------------------
 
-Camera::~Camera()
+FreeCamera::~FreeCamera(void)
 {
-
 }
 
 //--------------------------------------------------------------------------------------------------
 
 void
-Camera::setup_projection(const float fovy, const float aspect_ratio)
+FreeCamera::update()
 {
-    m_P = glm::perspective(fovy, aspect_ratio, 0.1f, 1000.0f);
-    m_fov = fovy;
-    m_aspect_ratio = aspect_ratio;
-}
+    glm::mat4 R = get_matrix_using_yaw_pitch_roll(m_yaw,m_pitch,m_roll);
+    m_position += m_translation;
+    m_translation = glm::vec3(0);
 
-//--------------------------------------------------------------------------------------------------
+    m_look = glm::vec3(R*glm::vec4(0,0,1,0));
+    glm::vec3 tgt = m_position + m_look;
+    m_up = glm::vec3(R*glm::vec4(0,1,0,0));
+    m_right = glm::cross(m_look, m_up);
+    m_V = glm::lookAt(m_position, tgt, m_up);
 
-const glm::mat4
-Camera::view_matrix() const
-{
-    return m_V;
-}
-
-//--------------------------------------------------------------------------------------------------
-
-const glm::mat4
-Camera::projection_matrix() const
-{
-    return m_P;
+    //normalize
+    //look = glm::normalize(look);
+    //up = glm::normalize(up);
+    //right = glm::normalize(right);
 }
 
 //--------------------------------------------------------------------------------------------------
 
 void
-Camera::position(const glm::vec3 position)
+FreeCamera::rotate(const float yaw, const float pitch, const float roll)
 {
-    m_position = position;
+    m_yaw = yaw;
+    m_pitch = pitch;
+    m_roll = roll;
 }
 
 //--------------------------------------------------------------------------------------------------
 
-const glm::vec3
-Camera::position() const
+void
+FreeCamera::walk(const float amount)
 {
-    return m_position;
+    m_translation += (m_look * amount);
 }
 
 //--------------------------------------------------------------------------------------------------
 
-glm::mat4
-Camera::get_matrix_using_yaw_pitch_roll(const float yaw, const float pitch, const float roll)
+void
+FreeCamera::strafe(const float amount)
 {
-    glm::mat4 R = glm::mat4(1);
-
-    R = glm::rotate(R, roll, glm::vec3(0,0,1));
-    R = glm::rotate(R,  yaw, glm::vec3(0,1,0));
-    R = glm::rotate(R, pitch, glm::vec3(1,0,0));
-
-    return R;
+    m_translation += (m_right * amount);
 }
 
 //--------------------------------------------------------------------------------------------------
 
-float
-Camera::get_FOV() const
+void
+FreeCamera::lift(const float amount)
 {
-    return m_fov;
+    m_translation += (m_up * amount);
 }
 
 //--------------------------------------------------------------------------------------------------
 
-float
-Camera::get_aspect_ratio() const
-{
-    return m_aspect_ratio;
-}
-
-//--------------------------------------------------------------------------------------------------
-
-}
-
+} // arrrpg

@@ -9,22 +9,25 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 add_executable(${PROJECT_NAME}
 src/main.cpp
-src/camera.cpp
-src/camera.h
-src/freecamera.cpp
-src/freecamera.h
-src/runtime.cpp
-src/runtime.h
-src/world.cpp
-src/world.h
-src/cube.cpp
-src/cube.h
-src/shader.cpp
-src/shader.h
+src/Camera.cpp
+src/Camera.h
+src/Entity.cpp
+src/Entity.h
+src/FreeCamera.cpp
+src/FreeCamera.h
+src/Runtime.cpp
+src/Runtime.h
+src/World.cpp
+src/World.h
+src/Cube.cpp
+src/Cube.h
+src/Shader.cpp
+src/Shader.h
 src/stdinc.h
 src/renderable.h
 shader/simple_fragment.glsl
 shader/simple_vertex.glsl
+README.md
 )
 
 target_link_libraries(arrrpg glfw GLEW GL)

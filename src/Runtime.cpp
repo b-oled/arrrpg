@@ -1,4 +1,4 @@
-// arrrpg - runtime.cpp
+// arrrpg - Runtime.cpp
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -15,11 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "stdinc.h"
-#include "runtime.h"
-#include "world.h"
-#include "cube.h"
-#include "freecamera.h"
-#include "shader.h"
+#include "Runtime.h"
+#include "World.h"
+#include "Cube.h"
+#include "FreeCamera.h"
+#include "Shader.h"
 
 #include <iostream>
 #include <unistd.h>
@@ -102,6 +102,7 @@ void
 Runtime::start()
 {
     glEnable(GL_DEPTH_TEST);
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
     //setup camera
     m_camera.reset( ARRRPG_NEW( FreeCamera() ) );
@@ -194,18 +195,11 @@ Runtime::on_key_callback(int key, int scancode, int action, int mods)
 void
 Runtime::on_cursorpos_callback(double x, double y)
 {
-    if (!m_mouse_look) {
-        //m_fov += (y - m_mouse_oldy) / 100.0f;
-        //m_camera->setup_projection(m_fov, m_camera->get_aspect_ratio());
-    } else {
-        m_rY += (y - m_mouse_oldy) / 100.0f;
-        m_rX += (m_mouse_oldx - x) / 100.0f;
-//        if(useFiltering)
-//            filterMouseMoves(rX, rY);
-//        else {
-//            mouseX = rX;
-//            mouseY = rY;
-//        }
+    if (m_mouse_look)
+    {
+        m_rY += (y - m_mouse_oldy) / 500.0f;
+        m_rX -= (m_mouse_oldx - x) / 500.0f;
+
         m_camera->rotate(m_rX,m_rY, 0);
     }
     m_mouse_oldx = x;

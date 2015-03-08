@@ -1,4 +1,4 @@
-// arrrpg - runtime.h
+// arrrpg - Entity.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,35 +14,41 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _FREECAMERA_H_
-#define _FREECAMERA_H_
+#ifndef _ENTITY_H_
+#define _ENTITY_H_
 
-#include "camera.h"
+#include "stdinc.h"
+#include "Shader.h"
 
 namespace arrrpg {
 
-class FreeCamera : public Camera
-{
+class Entity {
+
 public:
-    FreeCamera(void);
-    ~FreeCamera(void);
 
-    void walk(const float amount);
-    void strafe(const float amount);
-    void lift(const float amount);
-
-public: // from Camera
-    void update();
-    void rotate(const float yaw, const float pitch, const float roll);
+    void render(const float* MVP);
+    void init();
+    void destroy();
 
 protected:
-    float m_yaw;
-    float m_pitch;
-    float m_roll;
+    virtual GLenum primitive_type() = 0;
+    virtual void fill_vertex_buffer(GLfloat* pBuffer) = 0;
+    virtual void fill_index_buffer(GLshort* pBuffer) = 0;
+    virtual void set_custom_uniforms() = 0;
 
-    glm::vec3 m_translation;
+    GLuint m_vao_id;
+    GLuint m_vbo_vertices_id;
+    GLuint m_vbo_indices_id;
+
+    Shader m_shader;
+
+    GLenum m_primitive_type;
+    int m_total_vertices;
+    int m_total_indices;
+    int m_amount;
+
 };
 
-}
+} // namespace arrrpg
 
-#endif //_FREECAMERA_H_
+#endif // _ENTITY_H_

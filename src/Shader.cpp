@@ -1,4 +1,4 @@
-// arrrpg - shader.h
+// arrrpg - Shader.cpp
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "shader.h"
+#include "Shader.h"
 #include "stdinc.h"
 #include <sstream>
 #include <fstream>

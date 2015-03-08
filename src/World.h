@@ -1,4 +1,4 @@
-// arrrpg - cube.h
+// arrrpg - World.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,36 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _CUBE_H_
-#define _CUBE_H_
+#ifndef _WORLD_H_
+#define _WORLD_H_
 
-#include "renderable.h"
+#include "Entity.h"
 
 namespace arrrpg {
 
-class Cube : public Renderable< Cube >
+class World : public Entity
 {
 
 public:
-    Cube(int rows, int cols);
-    ~Cube();
+    World(int numx, int numz);
+    ~World();
 
     void time(float time);
-    void move(bool move);
 
     // from Renderable
+    int total_vertices();
+    int total_indices();
     GLenum primitive_type();
     void fill_vertex_buffer(GLfloat* pBuffer);
     void fill_index_buffer(GLshort* pBuffer);
     void SetCustomUniforms();
 
 private:
-    int m_rows;
-    int m_cols;
-    float m_time;
-    bool m_move;
+    int m_numz;
+    int m_numx;
+    int m_time;
+
 };
 
 }
 
-#endif // _CUBE_H_
+#endif // _WORLD_H_

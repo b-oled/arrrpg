@@ -1,4 +1,4 @@
-// arrrpg - world.h
+// arrrpg - FreeCamera.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
@@ -14,37 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef _WORLD_H_
-#define _WORLD_H_
+#ifndef _FREECAMERA_H_
+#define _FREECAMERA_H_
 
-#include "renderable.h"
+#include "Camera.h"
 
 namespace arrrpg {
 
-class World : public Renderable< World >
+class FreeCamera : public Camera
 {
-
 public:
-    World(int numx, int numz);
-    ~World();
+    FreeCamera(void);
+    ~FreeCamera(void);
 
-    void time(float time);
+    void walk(const float amount);
+    void strafe(const float amount);
+    void lift(const float amount);
 
-    // from Renderable
-    int total_vertices();
-    int total_indices();
-    GLenum primitive_type();
-    void fill_vertex_buffer(GLfloat* pBuffer);
-    void fill_index_buffer(GLshort* pBuffer);
-    void SetCustomUniforms();
+public: // from Camera
+    void update();
+    void rotate(const float yaw, const float pitch, const float roll);
 
-private:
-    int m_numz;
-    int m_numx;
-    int m_time;
+protected:
+    float m_yaw;
+    float m_pitch;
+    float m_roll;
 
+    glm::vec3 m_translation;
 };
 
 }
 
-#endif // _WORLD_H_
+#endif //_FREECAMERA_H_

@@ -1,4 +1,4 @@
-// arrrpg - runtime.h
+// arrrpg - Camera.h
 // Copyright (C) 2015 Ole Diederich <ole@schwarzekiste.info>
 // This file is part of arrrpg.
 // arrrpg is free software; you can redistribute it and/or modify it
